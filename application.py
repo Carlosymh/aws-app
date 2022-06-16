@@ -1,3 +1,4 @@
+from ast import Return
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, Response, jsonify #pip install flask
 import cv2 #pip install opencv-python-headless or pip install opencv-python
 import numpy as np  
@@ -25,27 +26,21 @@ def _create_password(password):
 @application.route('/')
 def Index():
   try:
-    if session:
-        if 'FullName' in session:
-            return redirect('/home')
-        else:
-            return render_template('index.html')
-    else:
-        return render_template('index.html')
-  except Exception as error:
-    flash(str(error))
     return render_template('index.html')
-
-# home page 
-@application.route('/home',methods=['POST','GET'])
-def home():
-  try:
-    if 'FullName' in session:
-      return render_template('home.html',Datos = session)
-    else:
-      flash("Inicia Sesion")
-      return render_template('index.html')
-
+    
   except Exception as error:
-    flash(str(error))
-    return redirect('/') 
+    return 'Hola en python'
+
+# # home page 
+# @application.route('/home',methods=['POST','GET'])
+# def home():
+#   try:
+#     if 'FullName' in session:
+#       return render_template('home.html',Datos = session)
+#     else:
+#       flash("Inicia Sesion")
+#       return render_template('index.html')
+
+#   except Exception as error:
+#     flash(str(error))
+#     return redirect('/') 
