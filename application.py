@@ -85,7 +85,7 @@ def validarcontrasena(usuario):
             data = cur.fetchone()
             cur.close()
             if data :
-                if check_password_hash(data[3],clave):
+                if data[3]==clave:
                     session['UserName'] = data[0]
                     session['FullName'] = data[0] +" "+ data[1]
                     session['User'] = data[2]
