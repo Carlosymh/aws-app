@@ -1,0 +1,76 @@
+{% extends 'nav.html'%}
+{% block cabezera%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image" href="/static/img/Muni.icon.png">  
+    <link href="https://fonts.googleapis.com/css2?family=Khula:wght@800&display=swap" rel="stylesheet">
+    <link href="//db.onlinewebfonts.com/c/69f1400361a215519d385199118a34aa?family=Harabara" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/nav.css')}}">
+    <script src="https://kit.fontawesome.com/206b5ce088.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/registro.css')}}">
+    <title>Registrar</title>
+</head>
+<body>
+{% with messages = get_flashed_messages() %}
+{% if messages%}
+{%for message in messages%}
+<script>
+    alert('{{message}}')
+</script>
+{%endfor%}
+{%endif%}
+{%endwith%}
+{% endblock %}
+{% block body%}
+    <div class="container"> 
+        <form action="/registrar" method="POST">
+            <label for="FirstName">
+                First name  :
+            </label>
+            <input type="text" placeholder="First Name" name="FirstName" required>
+            <label for="LastName">
+                Last name :
+            </label>
+            <input type="text" placeholder="Last Name" name="LastName" required>
+            <label for="User">
+                User :
+            </label>
+            <input type="text" placeholder="User" name="User" required>
+            <label for="Password">
+                Password :
+            </label>
+            <input  type="password" placeholder="******" name="Password" required autocomplete="off">
+            <label for="ValidatePassword">
+                Validate Password :
+            </label>
+            <input  type="password" placeholder="******" name="ValidatePassword" required autocomplete="off">
+            <label for="Access">
+                Access :
+            </label>
+            <select name="Access" required>
+                <option disabled selected>Selecciona una Opción </option>
+                <option value="Almacenista">Almacenista</option>
+                <option value="Analista">Analista</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Training">Training</option>
+            </select>
+            <label for="Site">
+                Site :
+            </label>
+            <select name="Site" required>
+                <option disabled selected>Selecciona una Opción </option>
+                <option value="CDMX01"> CDMX01</option>
+                <option value="MEDELLIN01"> MEDELLIN01</option>
+            </select>
+                
+            <input type="submit" value="Regístrar" name="btn" class="btn">
+                
+        </form>
+
+    </div>
+</section>
+{% endblock %}
