@@ -1,14 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, Response, jsonify #pip install flask
-import cv2 #pip install opencv-python-headless or pip install opencv-python
-import numpy as np  
-from pyzbar.pyzbar import decode #pip install pyzbar or pip install pyzbar[scripts]
+# import numpy as np  
 from werkzeug.security import generate_password_hash, check_password_hash #pip install -U Werkzeug
-from datetime import datetime, date #pip install datetime pip install pytz
-import pytz 
-import csv
-# from appaditional.connect import connectBD
+# from datetime import datetime, date #pip install datetime pip install pytz
+# import pytz 
+# import csv
+# # from appaditional.connect import connectBD
 import pymysql #pip install pymysql #pip install mysql-connector-python-rf
-import os
+# import os
   
 # UTC = pytz.utc 
 
@@ -25,8 +23,10 @@ def _create_password(password):
 @application.route('/')
 def Index():
   try:
-    return render_template('index.html')
-    
+    if session:
+        return render_template('index.html')
+    else:
+        return 'Hola en python'
   except Exception:
     return 'Hola en python'
 
