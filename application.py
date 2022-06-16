@@ -10,12 +10,12 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 # import pymysql #pip install pymysql #pip install mysql-connector-python-rf
 # import os
   
-UTC = pytz.utc 
+# UTC = pytz.utc 
 
 
 # settings
 application = Flask(__name__)
-UPLOAD_FOLDER = 'static/file/'
+# UPLOAD_FOLDER = 'static/file/'
 
 # # Function for passwords 
 # def _create_password(password):
@@ -27,7 +27,7 @@ def Index():
   try:
     return render_template('index.html')
     
-  except Exception as error:
+  except Exception:
     return 'Hola en python'
 
 # # home page 
