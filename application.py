@@ -26,10 +26,13 @@ def _create_password(password):
 @application.route('/')
 def Index():
   try:
-    if 'FullName' in session:
-      return redirect('/home')
+    if session:
+        if 'FullName' in session:
+            return redirect('/home')
+        else:
+            return render_template('index.html')
     else:
-      return render_template('index.html')
+        return render_template('index.html')
   except Exception as error:
     flash(str(error))
     return render_template('index.html')
