@@ -74,8 +74,8 @@ def cambiarfacility():
 @application.route('/validar/<usuario>', methods=['POST'])
 def validarcontrasena(usuario):
     try:
-        if request:
-            if request.method == 'POST':
+        if request.method:
+            if request.method == 'POST' or request.method == 'post':
                 clave = request.form['clave']
                 flash('clave')
             # link = connectBD()
@@ -101,9 +101,8 @@ def validarcontrasena(usuario):
             # else:
             #     flash('Contraseña Incorrecta')
             #     return redirect('/')
-        # else:
-        #     flash('error ')
-        #     return redirect('/')
+            else:
+                return redirect('/')
         else:
             return usuario
     except Exception as error:
