@@ -40,27 +40,29 @@ def Index():
     return render_template('index.html')
 
 # password form 
-# @application.route('/inicio', methods=['POST'])
-# def validarusuaro():
-#   if request.method == 'POST':
-#       usuario =  request.form['user'] 
+@application.route('/inicio', methods=['POST'])
+def validarusuaro():
+  if request.method == 'POST':
+      usuario =  request.form['user'] 
+      clave = request.form['clave']
       
-#       link = connectBD()
-#       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-#       cur= db_connection.cursor()
-#       sql = "SELECT FirstName, User FROM `users` WHERE `User`=%s Limit 1"
-#       cur.execute(sql, (usuario,))
-#       # Read a single record
-#       data = cur.fetchone()
-#       cur.close()
-#       if data :
-#         username = data[0]
-#         user = data[1]
-#         return render_template('inicio.html',username=username,user=user)
-#       else:
-#         return render_template('index.html')
-#   else:
-#     return redirect('/')
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+      cur= db_connection.cursor()
+      sql = "SELECT FirstName, User FROM `users` WHERE `User`=%s Limit 1"
+      cur.execute(sql, (usuario,))
+      # Read a single record
+      data = cur.fetchone()
+      cur.close()
+      return data
+      # if data :
+      #   username = data[0]
+      #   user = data[1]
+      #   return render_template('inicio.html',username=username,user=user)
+      # else:
+      #   return render_template('index.html')
+  else:
+    return redirect('/')
  
 # form to change site
 @application.route('/cambiar', methods=['POST'])
