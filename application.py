@@ -43,10 +43,22 @@ def Index():
 @application.route('/inicio', methods=['POST'])
 def validarusuaro():
   if request.method == 'POST':
-    usuario =  request.form['user'] 
-    username = usuario
-    user = usuario
-    return render_template('inicio.html',username=username,user=user)
+      usuario =  request.form['user'] 
+      
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+      cur= db_connection.cursor()
+      sql = "SELECT FirstName, User FROM `users` WHERE `User`=%s Limit 1"
+      cur.execute(sql, (usuario,))
+      # Read a single record
+      data = cur.fetchone()
+      cur.close()
+      if data :
+        username = data[0]
+        user = data[1]
+        return render_template('inicio.html',username=username,user=user)
+      else:
+        return render_template('index.html')
   else:
     return redirect('/')
  
@@ -65,36 +77,33 @@ def cambiarfacility():
 @application.route('/validar/<usuario>', methods=['POST'])
 def validarcontrasena(usuario):
     try:
-      if request.method:
-        if request.method == 'POST' or request.method == 'post':
-          clave = request.form['clave']
-          link = connectBD()
-          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-          cur= db_connection.cursor()
-          sql = "SELECT FirstName, LastName, User, Password, Access, Site  FROM `users` WHERE `User`=%s Limit 1"
-          cur.execute(sql, (usuario,))
-          # Read a single record
-          userdata = cur.fetchone()
-          cur.close()
-          return userdata
-          # if userdata :
-          #   if check_password_hash(userdata[3],clave):
-          #     session['UserName'] = userdata[0]
-          #     session['FullName'] = userdata[0] +" "+ userdata[1]
-          #     session['User'] = userdata[2]
-          #     session['SiteName'] = userdata[5]
-          #     session['Rango'] = userdata[4]
-          #     return redirect('/home')
-          #   else:
-          #     flash('Contraseña Incorrecta')
-          #     return redirect('/')
-          # else:
-          #   flash('Contraseña Incorrecta')
-          #   return redirect('/')
-        else:
-          return redirect('/')
+      if request.method == 'POST':
+        clave = request.form['clave']
+        return clave
+        # link = connectBD()
+        # db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+        # cur= db_connection.cursor()
+        # sql = "SELECT * FROM `users` WHERE `User`=%s Limit 1"
+        # cur.execute(sql, (usuario,))
+        # # Read a single record
+        # data = cur.fetchone()
+        # cur.close()
+        # if data :
+        #   if check_password_hash(data[4],clave):
+        #     session['UserName'] = data[0]
+        #     session['FullName'] = data[0] +" "+ data[1]
+        #     session['User'] = data[2]
+        #     session['SiteName'] = data[5]
+        #     session['Rango'] = data[4]
+        #     return redirect('/home')
+        #   else:
+        #     flash('Contraseña Incorrecta')
+        #     return redirect('/')
+        # else:
+        #   flash('Contraseña Incorrecta')
+        #   return redirect('/')
       else:
-        return usuario
+        return redirect('/')
     except Exception as error:
       flash(str(error))
       return redirect('/')
