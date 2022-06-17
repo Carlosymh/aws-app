@@ -76,20 +76,21 @@ def validarcontrasena(usuario):
           # Read a single record
           userdata = cur.fetchone()
           cur.close()
-          if userdata :
-            if check_password_hash(userdata[3],clave):
-              session['UserName'] = userdata[0]
-              session['FullName'] = userdata[0] +" "+ userdata[1]
-              session['User'] = userdata[2]
-              session['SiteName'] = userdata[5]
-              session['Rango'] = userdata[4]
-              return redirect('/home')
-            else:
-              flash('Contraseña Incorrecta')
-              return redirect('/')
-          else:
-            flash('Contraseña Incorrecta')
-            return redirect('/')
+          return userdata
+          # if userdata :
+          #   if check_password_hash(userdata[3],clave):
+          #     session['UserName'] = userdata[0]
+          #     session['FullName'] = userdata[0] +" "+ userdata[1]
+          #     session['User'] = userdata[2]
+          #     session['SiteName'] = userdata[5]
+          #     session['Rango'] = userdata[4]
+          #     return redirect('/home')
+          #   else:
+          #     flash('Contraseña Incorrecta')
+          #     return redirect('/')
+          # else:
+          #   flash('Contraseña Incorrecta')
+          #   return redirect('/')
         else:
           return redirect('/')
       else:
