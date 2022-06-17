@@ -12,8 +12,6 @@ import os
   
 UTC = pytz.utc 
  
-link = connectBD()
-db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
 
 
 
@@ -45,21 +43,10 @@ def Index():
 @application.route('/inicio', methods=['POST'])
 def validarusuaro():
   if request.method == 'POST':
-      usuario =  request.form['user'] 
-      
-      
-      cur= db_connection.cursor()
-      sql = "SELECT FirstName, User FROM `users` WHERE `User`=%s Limit 1"
-      cur.execute(sql, (usuario,))
-      # Read a single record
-      data = cur.fetchone()
-      cur.close()
-      if data :
-        username = data[0]
-        user = data[1]
-        return render_template('inicio.html',username=username,user=user)
-      else:
-        return render_template('index.html')
+    usuario =  request.form['user'] 
+    username = usuario
+    user = usuario
+    return render_template('inicio.html',username=username,user=user)
   else:
     return redirect('/')
  
@@ -81,35 +68,35 @@ def validarcontrasena(usuario):
       if request.method:
         if request.method == 'POST' or request.method == 'post':
           clave = request.form['clave']
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           sql = "SELECT * FROM `users` WHERE `User`=%s Limit 1"
           cur.execute(sql, (usuario,))
           # Read a single record
-          datax = cur.fetchone()
+          data = cur.fetchone()
           cur.close()
-          return datax
-            # if data :
-            #     # if check_password_hash(data[4],clave):
-            #     #     session['UserName'] = data[0]
-            #     #     session['FullName'] = data[0] +" "+ data[1]
-            #     #     session['User'] = data[2]
-            #     #     session['SiteName'] = data[5]
-            #     #     session['Rango'] = data[4]
-            #     #     return redirect('/home')
-            #     # else:
-            #     #     flash('Contraseña Incorrecta')
-            #     #     return redirect('/')
-            #     flash(data)
-            # else:
-            #     flash('Contraseña Incorrecta')
-            #     return redirect('/')
+          if data :
+            if check_password_hash(data[4],clave):
+              session['UserName'] = data[0]
+              session['FullName'] = data[0] +" "+ data[1]
+              session['User'] = data[2]
+              session['SiteName'] = data[5]
+              session['Rango'] = data[4]
+              return redirect('/home')
+            else:
+              flash('Contraseña Incorrecta')
+              return redirect('/')
+          else:
+            flash('Contraseña Incorrecta')
+            return redirect('/')
         else:
-                return redirect('/')
+          return redirect('/')
       else:
-            return usuario
+        return usuario
     except Exception as error:
-        flash(str(error))
-        return redirect('/')
+      flash(str(error))
+      return redirect('/')
 
 # home page 
 @application.route('/home',methods=['POST','GET'])
@@ -214,7 +201,8 @@ def registroP():
         Site =  session['SiteName']
         status="Finished"
         
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM `orders` WHERE CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
@@ -222,7 +210,8 @@ def registroP():
         data = cur.fetchall()
         cur.close()
         
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM `orders` WHERE CLid=%s AND DeliveryDay=%s AND  Status =%s AND OperationGroup=%s AND Site=%s "
@@ -252,7 +241,8 @@ def registroMovPacking(route,deliveryday,OG):
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
         
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura =%s  limit 1  "
@@ -261,7 +251,8 @@ def registroMovPacking(route,deliveryday,OG):
         cur.close()
         if product:
             
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM orders WHERE Ean=%s AND  CLid=%s AND DeliveryDay=%s AND NOT Status=%s AND OperationGroup=%s AND Site=%s  limit 1"
@@ -281,7 +272,8 @@ def registroMovPacking(route,deliveryday,OG):
                 estatus= 'Pendding'
               ID_Order =data[0]
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "UPDATE orders SET Packer = %s, CurrentQuantity = %s,PendingQuantity = %s, Status = %s WHERE ID_Order  = %s"
@@ -291,7 +283,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection.commit()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "INSERT INTO movements (RouteName,FuOrder,CLid,Ean,Description,Quantity,Process,Responsible,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -301,7 +294,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection.commit()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s  "
@@ -309,7 +303,8 @@ def registroMovPacking(route,deliveryday,OG):
               data2 = cur.fetchall()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s  "
@@ -323,7 +318,8 @@ def registroMovPacking(route,deliveryday,OG):
             else:
               flash("Codigo Ean no Encontrado en esta Ruta")
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
@@ -331,7 +327,8 @@ def registroMovPacking(route,deliveryday,OG):
               data2 = cur.fetchall()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s "
@@ -342,7 +339,8 @@ def registroMovPacking(route,deliveryday,OG):
 
         else:
             
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM orders WHERE Ean=%s AND  CLid=%s AND DeliveryDay=%s AND NOT Status=%s AND OperationGroup=%s AND Site=%s  limit 1"
@@ -362,7 +360,8 @@ def registroMovPacking(route,deliveryday,OG):
                 estatus= 'Pendding'
               ID_Order =data[0]
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "UPDATE orders SET Packer = %s, CurrentQuantity = %s,PendingQuantity = %s, Status = %s WHERE ID_Order  = %s"
@@ -372,7 +371,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection.commit()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "INSERT INTO movements (RouteName,FuOrder,CLid,Ean,Description,Quantity,Process,Responsible,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -382,7 +382,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection.commit()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s  "
@@ -390,7 +391,8 @@ def registroMovPacking(route,deliveryday,OG):
               data2 = cur.fetchall()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s  "
@@ -404,7 +406,8 @@ def registroMovPacking(route,deliveryday,OG):
             else:
               flash("Codigo Ean no Encontrado en esta Ruta")
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
@@ -412,7 +415,8 @@ def registroMovPacking(route,deliveryday,OG):
               data2 = cur.fetchall()
               cur.close()
               
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s "
@@ -453,7 +457,8 @@ def registroMovReceiving(receivingType,orderNumber):
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
         
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura =%s  limit 1  "
@@ -462,6 +467,8 @@ def registroMovReceiving(receivingType,orderNumber):
         cur.close()
         if data:
           catidad2= int(cantidad)*int(data[4])
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Create a new record
           sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -470,6 +477,8 @@ def registroMovReceiving(receivingType,orderNumber):
           # your changes.
           db_connection.commit()
           cur.close()
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Read a single record
           sql = "SELECT * FROM receivingtable WHERE Ean_Muni =%s  limit 1  "
@@ -478,8 +487,8 @@ def registroMovReceiving(receivingType,orderNumber):
           cur.close()
           if Rdata:
             cantidadr = int(Rdata[5])+int(catidad2)
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "UPDATE receivingtable SET  Cantidad =%s, Fecha_de_Actualizacion=%s WHERE PurchaseOrder=%s AND Type=%s AND Ean_Muni=%s AND  Status=%s AND Site=%s "
@@ -489,8 +498,8 @@ def registroMovReceiving(receivingType,orderNumber):
             db_connection.commit()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -499,6 +508,8 @@ def registroMovReceiving(receivingType,orderNumber):
             # your changes.
             db_connection.commit()
             cur.close()
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Read a single record
           sql = "SELECT PurchaseOrder,	Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
@@ -507,6 +518,8 @@ def registroMovReceiving(receivingType,orderNumber):
           cur.close()
           return render_template('actualizacion/receivingscan.html',Datos =session, data=data2, ReceivingType=receivingType,OrderNumber=orderNumber)
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Create a new record
           sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,Quantity,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -515,6 +528,8 @@ def registroMovReceiving(receivingType,orderNumber):
           # your changes.
           db_connection.commit()
           cur.close()
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Read a single record
           sql = "SELECT * FROM receivingtable WHERE Ean_Muni =%s  limit 1  "
@@ -523,8 +538,8 @@ def registroMovReceiving(receivingType,orderNumber):
           cur.close()
           if Rdata:
             cantidadr = int(Rdata[5])+int(cantidad)
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "UPDATE receivingtable SET  Cantidad =%s, Fecha_de_Actualizacion=%s WHERE PurchaseOrder=%s AND Type=%s AND Ean_Muni=%s AND  Status=%s AND Site=%s "
@@ -534,8 +549,8 @@ def registroMovReceiving(receivingType,orderNumber):
             db_connection.commit()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -544,6 +559,8 @@ def registroMovReceiving(receivingType,orderNumber):
             # your changes.
             db_connection.commit()
             cur.close()
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Read a single record
           sql = "SELECT PurchaseOrder,	Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
@@ -559,8 +576,8 @@ def registroMovReceiving(receivingType,orderNumber):
 @application.route('/CerrarReceiving/<receivingType>/<orderNumber>',methods=['POST','GET'])
 def cerrarReceiving(receivingType,orderNumber):
   try:
-      
-      
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")    
       cur= db_connection.cursor()
       # Create a new record
       sql = "UPDATE receiving SET Status = %s WHERE PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s"
@@ -587,16 +604,16 @@ def registrarInventory():
           timeZ = pytz.timezone('America/Mexico_City')
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")  
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura =%s  limit 1  "
         cur.execute(sql, (ean))
         data = cur.fetchone()
         cur.close()
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")  
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM inventory WHERE CB_Captura =%s  limit 1  "
@@ -607,8 +624,8 @@ def registrarInventory():
           cantidad2= int(cantidad)*int(data[4])
           if datainv:
             if datainv[7]== 'finalized':
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "UPDATE inventory SET Status = %s, Cantidad_Anterior=%s, Cantidad_Actual=%s, inventoryUser=%s,	Fecha_de_Actualizacion=%s WHERE CB_Captura=%s AND Site=%s "
@@ -619,8 +636,8 @@ def registrarInventory():
               cur.close()
             else:
               cantidad3=int(datainv[5])+cantidad2
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "UPDATE inventory SET Cantidad_Actual=%s, inventoryUser=%s WHERE CB_Captura=%s AND Site=%s"
@@ -630,8 +647,8 @@ def registrarInventory():
               db_connection.commit()
               cur.close()
             catidad2= int(cantidad)*int(data[4])
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")          
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -640,8 +657,8 @@ def registrarInventory():
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT PurchaseOrder,	Type,EanMuni, Description, sum(Quantity) FROM receiving WHERE  PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s AND Site=%s GROUP BY PurchaseOrder,	Type, EanMuni, Description"
@@ -651,8 +668,8 @@ def registrarInventory():
             return render_template('form/inventory.html',Datos =session, data=data2)
           else:
             catidad2= int(cantidad)*int(data[4])
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO inventory (CB_Captura,EAN_MUNI,Producto,Cantidad_Anterior,Cantidad_Actual,Unidad_de_Medida,Status,inventoryUser,Fecha_de_Actualizacion,Site) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -661,8 +678,8 @@ def registrarInventory():
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -671,8 +688,8 @@ def registrarInventory():
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT PurchaseOrder,	Type,Ean,EanMuni, Description, sum(Quantity) FROM receiving WHERE  PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s AND Site=%s GROUP BY PurchaseOrder,	Type,Ean, EanMuni, Description"
@@ -692,8 +709,8 @@ def formsearch():
   try:
       if request.method == 'POST':
         ean =  request.form['ean'].strip()
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura  =  %s"
@@ -723,8 +740,8 @@ def registrarProductoinv(ean,cantidad):
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
         Factor_de_Conversión =  request.form['Factor_de_Conversión']
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Create a new record
         sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
@@ -733,16 +750,16 @@ def registrarProductoinv(ean,cantidad):
         # your changes.
         db_connection.commit()
         cur.close()
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura =%s  limit 1  "
         cur.execute(sql, (ean))
         data = cur.fetchone()
         cur.close()
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM inventory WHERE CB_Captura =%s  limit 1  "
@@ -753,8 +770,8 @@ def registrarProductoinv(ean,cantidad):
           cantidad2= int(cantidad)*int(data[4])
           if datainv:
             if datainv[7]== 'finalized':
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "UPDATE inventory SET Status = %s, Cantidad_Anterior=%s, Cantidad_Actual=%s, inventoryUser=5s,	Fecha_de_Actualizacion=%s WHERE CB_Captura=%s AND Site=%s "
@@ -765,8 +782,8 @@ def registrarProductoinv(ean,cantidad):
               cur.close()
             else:
               cantidad3=int(datainv[5])+cantidad2
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "UPDATE inventory SET Cantidad_Actual=%s, inventoryUser=%s WHERE CB_Captura=%s AND Site=%s"
@@ -776,8 +793,8 @@ def registrarProductoinv(ean,cantidad):
               db_connection.commit()
               cur.close()
             catidad2= int(cantidad)*int(data[4])
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -786,8 +803,8 @@ def registrarProductoinv(ean,cantidad):
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT PurchaseOrder,	Type,EanMuni, Description, sum(Quantity) FROM receiving WHERE  PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s AND Site=%s GROUP BY PurchaseOrder,	Type, EanMuni, Description"
@@ -797,8 +814,8 @@ def registrarProductoinv(ean,cantidad):
             return render_template('form/inventory.html',Datos =session, data=data2)
           else:
             catidad2= int(cantidad)*int(data[4])
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO inventory (CB_Captura,EAN_MUNI,Producto,Cantidad_Anterior,Cantidad_Actual,Unidad_de_Medida,Status,inventoryUser,Fecha_de_Actualizacion,Site) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -807,8 +824,8 @@ def registrarProductoinv(ean,cantidad):
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -817,8 +834,8 @@ def registrarProductoinv(ean,cantidad):
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT PurchaseOrder,	Type,EanMuni, Description, sum(Quantity) FROM receiving WHERE  PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s AND Site=%s GROUP BY PurchaseOrder,	Type, EanMuni, Description"
@@ -840,8 +857,8 @@ def registrarProducto(ean):
         EAN_MUNI =  request.form['EAN_MUNI'].strip()
         Producto =  request.form['Producto']
         Factor_de_Conversión =  request.form['Factor_de_Conversión']
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Create a new record
         sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
@@ -850,8 +867,8 @@ def registrarProducto(ean):
         # your changes.
         db_connection.commit()
         cur.close()
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura =%s  limit 1  "
@@ -869,8 +886,8 @@ def searchProductinv(ean,cantidad):
   try:
       if request.method == 'POST':
         desc =  request.form['desc']
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE Producto LIKE '%{}%'"
@@ -888,8 +905,8 @@ def searchProduct(ean):
   try:
       if request.method == 'POST':
         desc =  request.form['desc']
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE Producto LIKE '%{}%'"
@@ -913,8 +930,8 @@ def registrarDamage():
           timeZ = pytz.timezone('America/Mexico_City')
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
         sql = "SELECT * FROM product WHERE CB_Captura =%s  limit 1  "
@@ -939,8 +956,8 @@ def registrarDamage():
           cur.close()
           if Inv:
             cantidadinv=int(Inv[4])-int(catidad2)
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "UPDATE inventory SET Cantidad_Actual = %s, Fecha_de_Actualizacion = %s WHERE EAN_MUNI=%s AND  Site=%s "
@@ -965,8 +982,8 @@ def registrarDamage():
           cur.close()
           if Inv:
             cantidadinv=int(Inv[4])-int(catidad2)
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "UPDATE inventory SET Cantidad_Actual = %s, Fecha_de_Actualizacion = %s WHERE EAN_MUNI=%s AND  Site=%s "
@@ -975,8 +992,8 @@ def registrarDamage():
             # your changes.
             db_connection.commit()
             cur.close()
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO mermas (Ean,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -986,8 +1003,8 @@ def registrarDamage():
             db_connection.commit()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO mermas (Ean,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -1011,8 +1028,8 @@ def registrarDamage():
 @application.route('/CerrarDamage',methods=['POST','GET'])
 def cerrarDamage():
   try:
-      
-      
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
       # Create a new record
       sql = "UPDATE mermas SET 	Status=%s WHERE 	Status=%s AND Responsible=%s AND Site=%s"
@@ -1032,8 +1049,8 @@ def cerrarInventory():
   try:
       receivingType="Inventory"
       orderNumber="No aplica"
-      
-      
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
       # Create a new record
       sql = "UPDATE inventory SET 	Status=%s WHERE 	Status=%s AND inventoryUser=%s AND Site=%s"
@@ -1042,8 +1059,8 @@ def cerrarInventory():
       # your changes.
       db_connection.commit()
       cur.close()
-      
-      
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
       # Create a new record
       sql = "UPDATE receiving SET Status = %s WHERE PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s"
@@ -1071,6 +1088,8 @@ def registrar():
         password = _create_password(request.form['Password'])
 
         if check_password_hash(password,request.form['Password']) and check_password_hash(password,request.form['ValidatePassword']):
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           sql = "SELECT * FROM users WHERE User=%s Limit 1"
           cur.execute(sql, (User,))
@@ -1081,8 +1100,8 @@ def registrar():
             flash("El Usuario Ya Existe")
             return render_template('registro.html',Datos =session)
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
             sql = "INSERT INTO users (FirstName,LastName,User,Password,Access,Site) VALUES (%s,%s,%s,%s,%s,%s)"
@@ -1143,8 +1162,8 @@ def reporte_receiving(rowi):
                 daterangef=request.form['datefilter']
                 daterange=daterangef.replace("-", "' AND '")
                 session['datefilter_receiving']=daterange
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1153,8 +1172,8 @@ def reporte_receiving(rowi):
                 cur.close()
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2)
@@ -1164,8 +1183,8 @@ def reporte_receiving(rowi):
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
             else:
               session.pop('datefilter_receiving')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2)
@@ -1181,8 +1200,8 @@ def reporte_receiving(rowi):
                     daterangef=request.form['datefilter']
                     daterange=daterangef.replace("-", "' AND '")
                     session['datefilter_receiving']=daterange
-                    
-                    
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                     cur= db_connection.cursor()
                     # Read a single record
                     sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1193,8 +1212,8 @@ def reporte_receiving(rowi):
                   else:
                     session.pop('filtro_receiving')
                     session.pop('valor_receiving')
-                    
-                    
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                     cur= db_connection.cursor()
                     # Read a single record
                     sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1206,8 +1225,8 @@ def reporte_receiving(rowi):
                   daterangef=request.form['datefilter']
                   daterange=daterangef.replace("-", "' AND '")
                   session['datefilter_receiving']=daterange
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1221,8 +1240,8 @@ def reporte_receiving(rowi):
                   session.pop('valor_receiving')
                   if 'datefilter_receiving' in session:
                     session.pop('datefilter_receiving')
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1231,8 +1250,8 @@ def reporte_receiving(rowi):
                   cur.close()
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1246,8 +1265,8 @@ def reporte_receiving(rowi):
                 session.pop('valor_receiving')
               if 'datefilter_receiving' in session:
                 session.pop('datefilter_receiving')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1262,8 +1281,8 @@ def reporte_receiving(rowi):
                 daterangef=request.form['datefilter']
                 daterange=daterangef.replace("-", "' AND '")
                 session['datefilter_receiving']=daterange
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1274,8 +1293,8 @@ def reporte_receiving(rowi):
               else:
                 session.pop('filtro_receiving')
                 session.pop('valor_receiving')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1284,8 +1303,8 @@ def reporte_receiving(rowi):
                 cur.close()
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1299,8 +1318,8 @@ def reporte_receiving(rowi):
               session.pop('valor_receiving')
             if 'datefilter_receiving' in session:
                 session.pop('datefilter_receiving')
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1313,8 +1332,8 @@ def reporte_receiving(rowi):
             if len(session['valor_receiving'])>0:
               if 'datefilter_receiving' in session:
                 if len(session['datefilter_receiving'])>0:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1324,8 +1343,8 @@ def reporte_receiving(rowi):
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
                 else:
                   session.pop('datefilter_receiving')
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2)
@@ -1334,8 +1353,8 @@ def reporte_receiving(rowi):
                   cur.close()
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2)
@@ -1348,8 +1367,8 @@ def reporte_receiving(rowi):
               session.pop('valor_receiving')
               if 'datefilter_receiving' in session:
                 if len(session['datefilter_receiving'])>0:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE fecha BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1358,8 +1377,8 @@ def reporte_receiving(rowi):
                   cur.close()
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1368,8 +1387,8 @@ def reporte_receiving(rowi):
                   cur.close()
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1380,8 +1399,8 @@ def reporte_receiving(rowi):
           else:
             if 'datefilter_receiving' in session:
               if len(session['datefilter_receiving'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1391,8 +1410,8 @@ def reporte_receiving(rowi):
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_receiving')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1406,8 +1425,8 @@ def reporte_receiving(rowi):
                   daterangef=request.form['datefilter']
                   daterange=daterangef.replace("-", "' AND '")
                   session['datefilter_receiving']=daterange
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1416,8 +1435,8 @@ def reporte_receiving(rowi):
                   cur.close()
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1426,8 +1445,8 @@ def reporte_receiving(rowi):
                   cur.close()
                   return render_template('reportes/t_receiving.html',Datos = session,Infos =data) 
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1448,8 +1467,8 @@ def reporte_receiving(rowi):
           if len(session['valor_receiving'])>0:
             if 'datefilter_receiving' in session:
               if len(session['datefilter_receiving'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1459,8 +1478,8 @@ def reporte_receiving(rowi):
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_receiving')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2)
@@ -1469,8 +1488,8 @@ def reporte_receiving(rowi):
                 cur.close()
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2)
@@ -1483,8 +1502,8 @@ def reporte_receiving(rowi):
             session.pop('valor_receiving')
             if 'datefilter_receiving' in session:
               if len(session['datefilter_receiving'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1494,8 +1513,8 @@ def reporte_receiving(rowi):
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_receiving')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1504,8 +1523,8 @@ def reporte_receiving(rowi):
                 cur.close()
                 return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1516,8 +1535,8 @@ def reporte_receiving(rowi):
         else:
           if 'datefilter_receiving' in session:
             if len(session['datefilter_receiving'])>0:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['datefilter_receiving'],session['SiteName'],row1,row2)
@@ -1527,8 +1546,8 @@ def reporte_receiving(rowi):
               return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
             else:
               session.pop('datefilter_receiving')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1537,8 +1556,8 @@ def reporte_receiving(rowi):
               cur.close()
               return render_template('reportes/t_receiving.html',Datos = session,Infos =data)
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1571,8 +1590,8 @@ def reporte_orders(rowi):
                 daterangef=request.form['datefilter']
                 daterange=daterangef.replace("-", "' AND '")
                 session['datefilter_orders']=daterange
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1581,8 +1600,8 @@ def reporte_orders(rowi):
                 cur.close()
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2)
@@ -1592,8 +1611,8 @@ def reporte_orders(rowi):
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
             else:
               session.pop('datefilter')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2)
@@ -1609,8 +1628,8 @@ def reporte_orders(rowi):
                     daterangef=request.form['datefilter']
                     daterange=daterangef.replace("-", "' AND '")
                     session['datefilter_orders']=daterange
-                    
-                    
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                     cur= db_connection.cursor()
                     # Read a single record
                     sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1621,8 +1640,8 @@ def reporte_orders(rowi):
                   else:
                     session.pop('filtro_orders')
                     session.pop('valor_orders')
-                    
-                    
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                     cur= db_connection.cursor()
                     # Read a single record
                     sql = "SELECT * FROM orders WHERE DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1634,8 +1653,8 @@ def reporte_orders(rowi):
                   daterangef=request.form['datefilter']
                   daterange=daterangef.replace("-", "' AND '")
                   session['datefilter_orders']=daterange
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1649,8 +1668,8 @@ def reporte_orders(rowi):
                   session.pop('valor_orders')
                 if 'datefilter_orders' in session:
                   session.pop('datefilter_orders')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1663,8 +1682,8 @@ def reporte_orders(rowi):
                 session.pop('valor_orders')
               if 'datefilter_orders' in session:
                   session.pop('datefilter_orders')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1678,8 +1697,8 @@ def reporte_orders(rowi):
             if len(session['valor_orders'])>0:
               if 'datefilter_orders' in session:
                 if len(session['datefilter_orders'])>0:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1689,8 +1708,8 @@ def reporte_orders(rowi):
                   return render_template('reportes/t_orders.html',Datos = session,Infos =data)
                 else:
                   session.pop('datefilter_orders')
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2)
@@ -1699,8 +1718,8 @@ def reporte_orders(rowi):
                   cur.close()
                   return render_template('reportes/t_orders.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2)
@@ -1713,8 +1732,8 @@ def reporte_orders(rowi):
               session.pop('valor_orders')
               if 'datefilter_orders' in session:
                 if len(session['datefilter_orders'])>0:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1723,8 +1742,8 @@ def reporte_orders(rowi):
                   cur.close()
                   return render_template('reportes/t_orders.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1733,8 +1752,8 @@ def reporte_orders(rowi):
                   cur.close()
                   return render_template('reportes/t_orders.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1745,8 +1764,8 @@ def reporte_orders(rowi):
           else:
             if 'datefilter_orders' in session:
               if len(session['datefilter_orders'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1756,8 +1775,8 @@ def reporte_orders(rowi):
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_orders')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 cur.execute('SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
                 data = cur.fetchall()
@@ -1769,8 +1788,8 @@ def reporte_orders(rowi):
                   daterangef=request.form['datefilter']
                   daterange=daterangef.replace("-", "' AND '")
                   session['datefilter_orders']=daterange
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE  DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1779,8 +1798,8 @@ def reporte_orders(rowi):
                   cur.close()
                   return render_template('reportes/t_orders.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1789,8 +1808,8 @@ def reporte_orders(rowi):
                   cur.close()
                   return render_template('reportes/t_orders.html',Datos = session,Infos =data) 
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1810,8 +1829,8 @@ def reporte_orders(rowi):
           if len(session['valor_orders'])>0:
             if 'datefilter_orders' in session:
               if len(session['datefilter_orders'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1821,8 +1840,8 @@ def reporte_orders(rowi):
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_orders')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2)
@@ -1831,8 +1850,8 @@ def reporte_orders(rowi):
                 cur.close()
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2)
@@ -1845,8 +1864,8 @@ def reporte_orders(rowi):
             session.pop('valor_orders')
             if 'datefilter_orders' in session:
               if len(session['datefilter_orders'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1856,8 +1875,8 @@ def reporte_orders(rowi):
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_orders')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1866,8 +1885,8 @@ def reporte_orders(rowi):
                 cur.close()
                 return render_template('reportes/t_orders.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1878,8 +1897,8 @@ def reporte_orders(rowi):
         else:
           if 'datefilter_orders' in session:
             if len(session['datefilter_orders'])>0:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['datefilter_orders'],session['SiteName'],row1,row2)
@@ -1889,8 +1908,8 @@ def reporte_orders(rowi):
               return render_template('reportes/t_orders.html',Datos = session,Infos =data)
             else:
               session.pop('datefilter_orders')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1899,8 +1918,8 @@ def reporte_orders(rowi):
               cur.close()
               return render_template('reportes/t_orders.html',Datos = session,Infos =data)
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -1933,8 +1952,8 @@ def reporte_movements(rowi):
                 daterangef=request.form['datefilter']
                 daterange=daterangef.replace("-", "' AND '")
                 session['datefilter_movements']=daterange
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -1943,8 +1962,8 @@ def reporte_movements(rowi):
                 cur.close()
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2)
@@ -1954,8 +1973,8 @@ def reporte_movements(rowi):
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
             else:
               session.pop('datefilter')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2)
@@ -1971,8 +1990,8 @@ def reporte_movements(rowi):
                     daterangef=request.form['datefilter']
                     daterange=daterangef.replace("-", "' AND '")
                     session['datefilter_movements']=daterange
-                    
-                    
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                     cur= db_connection.cursor()
                     # Read a single record
                     sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -1983,8 +2002,8 @@ def reporte_movements(rowi):
                   else:
                     session.pop('filtro_movements')
                     session.pop('valor_movements')
-                    
-                    
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                     cur= db_connection.cursor()
                     # Read a single record
                     sql = "SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -1996,8 +2015,8 @@ def reporte_movements(rowi):
                   daterangef=request.form['datefilter']
                   daterange=daterangef.replace("-", "' AND '")
                   session['datefilter_movements']=daterange
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2011,8 +2030,8 @@ def reporte_movements(rowi):
                   session.pop('valor_movements')
                 if 'datefilter_movements' in session:
                   session.pop('datefilter_movements')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2025,8 +2044,8 @@ def reporte_movements(rowi):
                 session.pop('valor_movements')
               if 'datefilter_movements' in session:
                   session.pop('datefilter_movements')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2040,8 +2059,8 @@ def reporte_movements(rowi):
             if len(session['valor_movements'])>0:
               if 'datefilter_movements' in session:
                 if len(session['datefilter_movements'])>0:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2051,8 +2070,8 @@ def reporte_movements(rowi):
                   return render_template('reportes/t_movements.html',Datos = session,Infos =data)
                 else:
                   session.pop('datefilter_movements')
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2)
@@ -2061,8 +2080,8 @@ def reporte_movements(rowi):
                   cur.close()
                   return render_template('reportes/t_movements.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2)
@@ -2075,8 +2094,8 @@ def reporte_movements(rowi):
               session.pop('valor_movements')
               if 'datefilter_movements' in session:
                 if len(session['datefilter_movements'])>0:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2085,8 +2104,8 @@ def reporte_movements(rowi):
                   cur.close()
                   return render_template('reportes/t_movements.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2095,8 +2114,8 @@ def reporte_movements(rowi):
                   cur.close()
                   return render_template('reportes/t_movements.html',Datos = session,Infos =data)
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2107,8 +2126,8 @@ def reporte_movements(rowi):
           else:
             if 'datefilter_movements' in session:
               if len(session['datefilter_movements'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2118,8 +2137,8 @@ def reporte_movements(rowi):
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_movements')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 cur.execute('SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
                 data = cur.fetchall()
@@ -2131,8 +2150,8 @@ def reporte_movements(rowi):
                   daterangef=request.form['datefilter']
                   daterange=daterangef.replace("-", "' AND '")
                   session['datefilter_movements']=daterange
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE   DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2141,8 +2160,8 @@ def reporte_movements(rowi):
                   cur.close()
                   return render_template('reportes/t_movements.html',Datos = session,Infos =data)
                 else:
-                  
-                  
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                   cur= db_connection.cursor()
                   # Read a single record
                   sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2151,8 +2170,8 @@ def reporte_movements(rowi):
                   cur.close()
                   return render_template('reportes/t_movements.html',Datos = session,Infos =data) 
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2172,8 +2191,8 @@ def reporte_movements(rowi):
           if len(session['valor_movements'])>0:
             if 'datefilter_movements' in session:
               if len(session['datefilter_movements'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2183,8 +2202,8 @@ def reporte_movements(rowi):
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_movements')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2)
@@ -2193,8 +2212,8 @@ def reporte_movements(rowi):
                 cur.close()
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2)
@@ -2207,8 +2226,8 @@ def reporte_movements(rowi):
             session.pop('valor_movements')
             if 'datefilter_movements' in session:
               if len(session['datefilter_movements'])>0:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2218,8 +2237,8 @@ def reporte_movements(rowi):
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
               else:
                 session.pop('datefilter_movements')
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Read a single record
                 sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2228,8 +2247,8 @@ def reporte_movements(rowi):
                 cur.close()
                 return render_template('reportes/t_movements.html',Datos = session,Infos =data)
             else:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2240,8 +2259,8 @@ def reporte_movements(rowi):
         else:
           if 'datefilter_movements' in session:
             if len(session['datefilter_movements'])>0:
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['datefilter_movements'],session['SiteName'],row1,row2)
@@ -2251,8 +2270,8 @@ def reporte_movements(rowi):
               return render_template('reportes/t_movements.html',Datos = session,Infos =data)
             else:
               session.pop('datefilter_movements')
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2261,8 +2280,8 @@ def reporte_movements(rowi):
               cur.close()
               return render_template('reportes/t_movements.html',Datos = session,Infos =data)
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM movements WHERE Site =\'{}\' ORDER BY ID_Mov DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
@@ -2285,15 +2304,15 @@ def crear_csvreceiving():
       if len(session['valor_receiving'])>0:
         if 'datefilter_receiving' in session:
           if len(session['datefilter_receiving'])>0:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['filtro_receiving'],session['valor_receiving'],session['datefilter_receiving'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM receiving WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['filtro_receiving'],session['valor_receiving'],session['SiteName'],row1,row2))
             data = cur.fetchall()
@@ -2306,20 +2325,22 @@ def crear_csvreceiving():
       else:
         if 'datefilter_receiving' in session:
           if len(session['datefilter_receiving'])>0:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['datefilter_receiving'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
           data = cur.fetchall()
@@ -2327,18 +2348,22 @@ def crear_csvreceiving():
     else:
       if 'datefilter_receiving' in session:
         if len(session['datefilter_receiving'])>0:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM receiving WHERE DATE(DateTime) BETWEEN \'{}\' AND ORDER BY ID_Receiving DESC  Site =\'{}\' LIMIT {}, {}'.format(session['datefilter_receiving'],session['SiteName'],row1,row2))
           data = cur.fetchall()
           cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
           data = cur.fetchall()
           cur.close()
       else:
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         cur.execute('SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
         data = cur.fetchall()
@@ -2376,20 +2401,22 @@ def crear_csvorders():
       if len(session['valor_orders'])>0:
         if 'datefilter_orders' in session:
           if len(session['datefilter_orders'])>0:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND 	DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['filtro_orders'],session['valor_orders'],session['datefilter_orders'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM orders WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['filtro_orders'],session['valor_orders'],session['SiteName'],row1,row2))
           data = cur.fetchall()
@@ -2397,20 +2424,22 @@ def crear_csvorders():
       else:
         if 'datefilter_orders' in session:
           if len(session['datefilter_orders'])>0:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM orders WHERE 	DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['datefilter_orders'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
           data = cur.fetchall()
@@ -2418,18 +2447,22 @@ def crear_csvorders():
     else:
       if 'datefilter_orders' in session:
         if len(session['datefilter_orders'])>0:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM orders WHERE 	DeliveryDay BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['datefilter_orders'],session['SiteName'],row1,row2))
           data = cur.fetchall()
           cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
           data = cur.fetchall()
           cur.close()
       else:
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         cur.execute('SELECT * FROM orders WHERE Site =\'{}\' ORDER BY ID_Order DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
         data = cur.fetchall()
@@ -2475,20 +2508,22 @@ def crear_ccsvmovements():
       if len(session['valor_movements'])>0:
         if 'datefilter_movements' in session:
           if len(session['datefilter'])>0:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['filtro_movements'],session['valor_movements'],session['datefilter_movements'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM movements WHERE {} LIKE \'%{}%\' AND Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['filtro_movements'],session['valor_movements'],session['SiteName'],row1,row2))
           data = cur.fetchall()
@@ -2496,20 +2531,22 @@ def crear_ccsvmovements():
       else:
         if 'datefilter_movements' in session:
           if len(session['datefilter_movements'])>0:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['datefilter_movements'],session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
           else:
-            
-            
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             cur.execute('SELECT * FROM movements WHERE Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
             data = cur.fetchall()
             cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM movements WHERE Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
           data = cur.fetchall()
@@ -2517,18 +2554,22 @@ def crear_ccsvmovements():
     else:
       if 'datefilter_movements' in session:
         if len(session['datefilter_movements'])>0:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM movements WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['datefilter_movements'],session['SiteName'],row1,row2))
           data = cur.fetchall()
           cur.close()
         else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           cur.execute('SELECT * FROM movements WHERE Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
           data = cur.fetchall()
           cur.close()
       else:
-        
-        
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         cur.execute('SELECT * FROM movements WHERE Site =\'{}\'  ORDER BY ID_Mov DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
         data = cur.fetchall()
@@ -2581,8 +2622,8 @@ def uploadFiles():
           for row in data:
             if i >0:
               if row[2] != '#N/A':
-                
-                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8mb4", init_command="set names utf8mb4")
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Create a new record
                 sql = "INSERT INTO product (CB_Captura,  EAN_MUNI, Producto, Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
@@ -2625,8 +2666,8 @@ def uploadFiles():
                 status= 'In Process'
               else:
                 status= 'Pendding'
-              
-              
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
               sql = "SELECT * FROM orders WHERE RouteName=%s AND  Fk_order=%s AND FuOrder=%s AND Ean=%s  Limit 1 "
@@ -2634,8 +2675,8 @@ def uploadFiles():
               data = cur.fetchone()
               cur.close()
               if data is None:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Create a new record
                 sql = "INSERT INTO orders (RouteName,FUName,Service_Zone,Fk_order,Packer,FuOrder,Ean,OperationGroup,ProductName,Type,DeliveryDay,OriginalQuantity,Vendedor,CLid,Stop,CurrentQuantity,PendingQuantity,Status,Site) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -2645,8 +2686,8 @@ def uploadFiles():
                 db_connection.commit()
                 cur.close()
               else:
-                
-                
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Create a new record
                 sql = "UPDATE orders SET CurrentQuantity = %s, PendingQuantity = %s, Status = %s, Packer = %s WHERE RouteName=%s AND  Fk_order=%s AND FuOrder=%s AND Ean=%s"
