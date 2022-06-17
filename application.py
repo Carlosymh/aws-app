@@ -74,10 +74,10 @@ def cambiarfacility():
 @application.route('/validar/<usuario>', methods=['POST'])
 def validarcontrasena(usuario):
     try:
-        if request.method:
-            if request.method == 'POST' or request.method == 'post':
-                clave = request.form['clave']
-                flash('clave')
+      if request.method:
+        if request.method == 'POST' or request.method == 'post':
+          clave = request.form['clave']
+          return clave
             # link = connectBD()
             # db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             # cur= db_connection.cursor()
@@ -101,9 +101,9 @@ def validarcontrasena(usuario):
             # else:
             #     flash('Contraseña Incorrecta')
             #     return redirect('/')
-            else:
-                return redirect('/')
         else:
+                return redirect('/')
+      else:
             return usuario
     except Exception as error:
         flash(str(error))
