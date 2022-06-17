@@ -72,7 +72,7 @@ def cambiarfacility():
     return redirect('/home')
     
 # user validation
-@application.route('/validar/<usuario>/c', methods=['POST'])
+@application.route('/validar/<usuario>/<c>', methods=['POST'])
 def validarcontrasena(usuario,c):
     try:
       if request.method:
