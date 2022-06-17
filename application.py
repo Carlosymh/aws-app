@@ -55,12 +55,12 @@ def validarusuaro():
       if data :
         username = data[0]
         user = data[1]
-        # session['UserName'] = data[0]
-        # session['FullName'] = data[0] +" "+ data[1]
-        # session['User'] = data[2]
-        # session['SiteName'] = data[5]
-        # session['Rango'] = data[4]
-        return render_template('inicio.html',username=username,user=user)
+        session['UserName'] = data[0]
+        session['FullName'] = data[0] +" "+ data[1]
+        session['User'] = data[2]
+        session['SiteName'] = data[5]
+        session['Rango'] = data[4]
+        return redirect('/home')
       else:
         return render_template('index.html')
   else:
@@ -83,16 +83,6 @@ def validarcontrasena():
     try:
       if request.method == 'POST':
         clave = request.form['clave']
-        usuario =  request.form['user'] 
-        link = connectBD()
-        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-        cur= db_connection.cursor()
-        sql = "SELECT * FROM `users` WHERE `User`=%s Limit 1"
-        cur.execute(sql, (usuario,))
-        # Read a single record
-        data = cur.fetchone()
-        cur.close()
-        return data
         # if data :
         #   if check_password_hash(data[4],clave):
         #     session['UserName'] = data[0]
