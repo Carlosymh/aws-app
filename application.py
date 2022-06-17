@@ -45,7 +45,7 @@ def validarusuaro():
       link = connectBD()
       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
-      sql = "SELECT FirstName, User FROM `users` WHERE `User`=%s Limit 1"
+      sql = "SELECT FirstName, User,Password FROM `users` WHERE `User`=%s Limit 1"
       cur.execute(sql, (usuario,))
       # Read a single record
       data = cur.fetchone()
@@ -53,7 +53,8 @@ def validarusuaro():
       if data :
         username = data[0]
         user = data[1]
-        return render_template('inicio.html',username=username,user=user)
+        c = data[2]
+        return render_template('inicio.html',username=username,user=user,c=c)
       else:
         return render_template('index.html')
   else:
@@ -71,21 +72,13 @@ def cambiarfacility():
     return redirect('/home')
     
 # user validation
-@application.route('/validar/<usuario>', methods=['POST'])
-def validarcontrasena(usuario):
+@application.route('/validar/<usuario>/c', methods=['POST'])
+def validarcontrasena(usuario,c):
     try:
       if request.method:
         if request.method == 'POST' or request.method == 'post':
           clave = request.form['clave']
-          link = connectBD()
-          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-          cur= db_connection.cursor()
-          sql = "SELECT FirstName, User FROM `users` WHERE `User`=%s Limit 1"
-          cur.execute(sql, (usuario,))
-          # Read a single record
-          data = cur.fetchone()
-          cur.close()
-          return data 
+          return c 
             # if data :
             #     # if check_password_hash(data[4],clave):
             #     #     session['UserName'] = data[0]
