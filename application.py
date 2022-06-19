@@ -54,7 +54,7 @@ def validarusuaro():
       cur.close()
       if data :
         username = data[0]
-        user = data[1]
+        user = data[2]
         session['UserName'] = data[0]
         session['FullName'] = data[0] +" "+ data[1]
         session['User'] = data[2]
