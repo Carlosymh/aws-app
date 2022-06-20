@@ -1,9 +1,9 @@
 
 def connectBD ():
-    host = "admin.c9itlnnb7fin.us-west-1.rds.amazonaws.com"
+    host = "aa8jptky0frh68.c9itlnnb7fin.us-west-1.rds.amazonaws.com"
     port=3306
     user = "admin"
-    Password= "administrador"#Adm1n1str4d0r
+    Password= "aa8jptky0frh68"
     db = "muni"
 
     return (host,user,Password, db)
