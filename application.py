@@ -86,7 +86,8 @@ def validarcontrasena(usuario):
       # Read a single record
       data = cur.fetchone()
       cur.close()
-      return 'Hola'
+      hola= "Hola "+str(data[0])+" "+str(data[1])
+      return hola
       if data :
         return data
         # if check_password_hash(data[4],clave):
