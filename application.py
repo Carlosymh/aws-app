@@ -13,12 +13,11 @@ import os
 UTC = pytz.utc 
  
 
-application.secret_key = 'mysecretkey'
 
 
 # settings
 application = Flask(__name__)
-# application.secret_key = 'mysecretkey'
+application.secret_key = 'mysecretkey'
 UPLOAD_FOLDER = 'static/file/'
 
 # Function for passwords 
