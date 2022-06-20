@@ -78,18 +78,15 @@ def validarcontrasena(usuario):
   try:
     if request.method == 'POST':
       clave = request.form['clave']
-      try:
-        link = connectBD()
-        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-        cur= db_connection.cursor()
-        sql = "SELECT FirstName, LastName, Password, Access, Site FROM `users` WHERE `User`=%s Limit 1"
-        cur.execute(sql, (usuario,))
-        # Read a single record
-        data = cur.fetchone()
-        cur.close()
-        return data
-      except:
-        return 'adios'
+      link = connectBD()
+      db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+      cur= db_connection.cursor()
+      sql = "SELECT FirstName, User FROM users WHERE User=%s Limit 1"
+      cur.execute(sql, (usuario,))
+      # Read a single record
+      data = cur.fetchone()
+      cur.close()
+      return 'Hola'
       if data :
         return data
         # if check_password_hash(data[4],clave):
