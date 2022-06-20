@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, Response, jsonify #pip install flask
+from flask import Flask, sessions, render_template, request, redirect, url_for, flash, session, make_response, Response, jsonify #pip install flask
 # import cv2 #pip install opencv-python-headless or pip install opencv-python
 # import numpy as np  
 # from pyzbar.pyzbar import decode #pip install pyzbar or pip install pyzbar[scripts]
@@ -13,6 +13,7 @@ import os
 UTC = pytz.utc 
  
 
+application.secret_key = 'mysecretkey'
 
 
 # settings
@@ -87,7 +88,7 @@ def validarcontrasena(usuario):
       data = cur.fetchone()
       cur.close()
       hola= "Hola "+str(data[0])+" "+str(data[1])
-      session['UserName'] = data[0]
+      session['UserName'] = str(data[0])
       return hola
       if data :
         return data
