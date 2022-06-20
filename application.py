@@ -81,7 +81,7 @@ def validarcontrasena(usuario):
       link = connectBD()
       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
-      sql = "SELECT FirstName, User FROM users WHERE User=%s Limit 1"
+      sql = "SELECT FirstName, LastName, Password, Access, Site FROM users WHERE User=%s Limit 1"
       cur.execute(sql, (usuario,))
       # Read a single record
       data = cur.fetchone()
