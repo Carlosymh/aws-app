@@ -87,6 +87,7 @@ def validarcontrasena(usuario):
       data = cur.fetchone()
       cur.close()
       hola= "Hola "+str(data[0])+" "+str(data[1])
+      session['UserName'] = data[0]
       return hola
       if data :
         return data
