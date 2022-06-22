@@ -309,9 +309,9 @@ def registroMovPacking(clid,deliveryday,OG):
               data3 = cur.fetchall()
               cur.close()
               if data2:
-                return render_template('actualizacion/Scan.html',Datos =session, data=data2,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
+                return render_template('actualizacion/Scan.html',Datos =session, data=data2,clid=clid,deliveryday=deliveryday,OG=OG)
               else:
-                return render_template('actualizacion/Scan.html',Datos =session, dataf=data3,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
+                return render_template('actualizacion/Scan.html',Datos =session, dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
             else:
               flash("Codigo Ean no Encontrado en esta Ruta")
               
@@ -331,7 +331,7 @@ def registroMovPacking(clid,deliveryday,OG):
               cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data3 = cur.fetchall()
               cur.close()
-              return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
+              return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
         else:
             link = connectBD()
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
@@ -394,9 +394,9 @@ def registroMovPacking(clid,deliveryday,OG):
               data3 = cur.fetchall()
               cur.close()
               if data2:
-                return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
+                return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
               else:
-                return render_template('actualizacion/Scan.html',Datos =session, dataf=data3,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
+                return render_template('actualizacion/Scan.html',Datos =session, dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
             else:
               flash("Codigo Ean no Encontrado en esta Ruta")
               
@@ -417,7 +417,7 @@ def registroMovPacking(clid,deliveryday,OG):
               cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data3 = cur.fetchall()
               cur.close()
-              return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
+              return render_template('actualizacion/Scan.html',Datos =session, data=data2,dataf=data3,clid=clid,deliveryday=deliveryday,OG=OG)
 
   except Exception as error:
     flash(str(error))
@@ -473,7 +473,7 @@ def registroMovReceiving(receivingType,orderNumber):
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
-        sql = "SELECT Cantidad FROM receivingtable WHERE Ean_Muni =%s AND PurchaseOrder =%s ADN Type=%s  AND Site =%s AND Status =%s  "
+        sql = "SELECT Cantidad FROM receivingtable WHERE Ean_Muni =%s AND PurchaseOrder =%s ADN Type=%s  AND Site = %s AND Status =%s limit 1  "
         cur.execute(sql, (data[2],orderNumber,receivingType,session['SiteName'],'In Process'))
         Rdata = cur.fetchone()
         cur.close()
@@ -508,7 +508,7 @@ def registroMovReceiving(receivingType,orderNumber):
         cur.execute(sql, (orderNumber,receivingType,session['UserName'],'In Process',session['SiteName'],))
         data2 = cur.fetchall()
         cur.close()
-        return render_template('actualizacion/receivingscan.html',Datos =session, data=data2, ReceivingType=receivingType,OrderNumber=orderNumber)
+        return render_template('actualizacion/receivingscan.html',Datos =session, data=data2,ReceivingType=receivingType,OrderNumber=orderNumber)
       else:
         return render_template('actualizacion/Searchproduct.html',Datos =session,ean=ean,cantidad=cantidad,ReceivingType=receivingType,OrderNumber=orderNumber)
   except Exception as error: 
