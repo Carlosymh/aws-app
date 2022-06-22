@@ -1,3 +1,4 @@
+from cv2 import ROTATE_90_COUNTERCLOCKWISE
 from flask import Flask, sessions, render_template, request, redirect, url_for, flash, session, make_response, Response, jsonify #pip install flask
 # import cv2 #pip install opencv-python-headless or pip install opencv-python
 # import numpy as np  
@@ -114,8 +115,7 @@ def home():
       return render_template('home.html',Datos = session)
     else:
       flash("Inicia Sesion")
-      return render_template('index.html')
-
+      return redirect('/')
   except Exception as error:
     flash(str(error))
     return redirect('/') 
@@ -128,7 +128,7 @@ def packing():
       return render_template('form/packing.html',Datos = session)
     else:
       flash("Inicia Sesion")
-      return render_template('index.html')
+      return redirect('/')
   except Exception as error:
     flash(str(error))
     return redirect('/') 
@@ -193,7 +193,7 @@ def registro():
       return render_template('registro.html', Datos = session)
     else:
       flash("Acseso Denegado")
-    return render_template('index.html')
+    return redirect('/home')
   except Exception as error:
     flash(str(error))
     return redirect('/')
@@ -204,51 +204,49 @@ def registroP():
   try:
       if request.method == 'POST':
         deliveryday =  request.form['deliveryday']
-        route =  request.form['route']
-        OG =  request.form['OG']
+        clid =  request.form['route']
+        og =  request.form['OG']
         Site =  session['SiteName']
         status="Finished"
-        
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
-        sql = "SELECT * FROM `orders` WHERE CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
-        cur.execute(sql, (route,deliveryday,status,OG,Site, ))
+        sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM `orders` WHERE CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
+        cur.execute(sql, (clid,deliveryday,status,og,Site, ))
         data = cur.fetchall()
         cur.close()
-        
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
-        sql = "SELECT * FROM `orders` WHERE CLid=%s AND DeliveryDay=%s AND  Status =%s AND OperationGroup=%s AND Site=%s "
-        cur.execute(sql, (route,deliveryday,status,OG,Site, ))
+        sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM `orders` WHERE CLid=%s AND DeliveryDay=%s AND  Status =%s AND OperationGroup=%s AND Site=%s "
+        cur.execute(sql, (clid,deliveryday,status,og,Site, ))
         data3 = cur.fetchall()
         cur.close()
         if data :
-          return render_template('actualizacion/Scan.html',Datos =session, data=data,dataf=data3)
+          return render_template('actualizacion/Scan.html',Datos =session, data=data,dataf=data3,deliveryday=deliveryday,clid=clid,OG=og)
         else:
           flash("No hay Ordenes Pendientes es esta ruta")
           return redirect('/Packing')
+      else:
+        redirect('/Packing')
   except Exception as error: 
     flash(str(error))
     return redirect('/Packing')
 
 # packin mov register
-@application.route('/RegistroMovPacking/<route>/<deliveryday>/<OG>',methods=['POST','GET'])
-def registroMovPacking(route,deliveryday,OG):
+@application.route('/RegistroMovPacking/<clid>/<deliveryday>/<OG>',methods=['POST','GET'])
+def registroMovPacking(clid,deliveryday,OG):
   try:
       if request.method == 'POST':
         ean =  request.form['ean'].strip()
         status="Finished"
         Site=session['SiteName']
-        
         if session['SiteName']=='CDMX01':
           timeZ = pytz.timezone('America/Mexico_City')
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
-        
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
@@ -258,13 +256,12 @@ def registroMovPacking(route,deliveryday,OG):
         product = cur.fetchone()
         cur.close()
         if product:
-            
             link = connectBD()
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM orders WHERE Ean=%s AND  CLid=%s AND DeliveryDay=%s AND NOT Status=%s AND OperationGroup=%s AND Site=%s  limit 1"
-            cur.execute(sql, (product[2],route,deliveryday,status,OG,Site))
+            cur.execute(sql, (product[2],clid,deliveryday,status,OG,Site))
             data = cur.fetchone()
             cur.close()
             if data :
@@ -279,7 +276,6 @@ def registroMovPacking(route,deliveryday,OG):
               else:
                 estatus= 'Pendding'
               ID_Order =data[0]
-              
               link = connectBD()
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
@@ -290,33 +286,30 @@ def registroMovPacking(route,deliveryday,OG):
               # your changes.
               db_connection.commit()
               cur.close()
-              
               link = connectBD()
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Create a new record
               sql = "INSERT INTO movements (RouteName,FuOrder,CLid,Ean,Description,Quantity,Process,Responsible,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-              cur.execute(sql,(data[1],data[6],route,product[2],data[9],1,'Packing',session['UserName'],session['SiteName'],datetime.now(timeZ)))
+              cur.execute(sql,(data[1],data[6],clid,product[2],data[9],1,'Packing',session['UserName'],session['SiteName'],datetime.now(timeZ)))
               # connection is not autocommit by default. So you must commit to save
               # your changes.
               db_connection.commit()
               cur.close()
-              
               link = connectBD()
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s  "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s  "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data2 = cur.fetchall()
               cur.close()
-              
               link = connectBD()
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s  "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s  "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data3 = cur.fetchall()
               cur.close()
               if data2:
@@ -330,29 +323,26 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data2 = cur.fetchall()
               cur.close()
-              
               link = connectBD()
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data3 = cur.fetchall()
               cur.close()
               return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3)
-
         else:
-            
             link = connectBD()
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
             sql = "SELECT * FROM orders WHERE Ean=%s AND  CLid=%s AND DeliveryDay=%s AND NOT Status=%s AND OperationGroup=%s AND Site=%s  limit 1"
-            cur.execute(sql, (ean,route,deliveryday,status,OG,Site))
+            cur.execute(sql, (ean,clid,deliveryday,status,OG,Site))
             data = cur.fetchone()
             cur.close
             if data :
@@ -384,7 +374,7 @@ def registroMovPacking(route,deliveryday,OG):
               cur= db_connection.cursor()
               # Create a new record
               sql = "INSERT INTO movements (RouteName,FuOrder,CLid,Ean,Description,Quantity,Process,Responsible,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-              cur.execute(sql,(data[1],data[6],route,ean,data[9],1,'Packing',session['UserName'],session['SiteName'],datetime.now(timeZ)))
+              cur.execute(sql,(data[1],data[6],clid,ean,data[9],1,'Packing',session['UserName'],session['SiteName'],datetime.now(timeZ)))
               # connection is not autocommit by default. So you must commit to save
               # your changes.
               db_connection.commit()
@@ -394,8 +384,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s  "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s  "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data2 = cur.fetchall()
               cur.close()
               
@@ -403,8 +393,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s  "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s  "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data3 = cur.fetchall()
               cur.close()
               if data2:
@@ -418,8 +408,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND NOT Status =%s AND OperationGroup=%s AND Site=%s "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data2 = cur.fetchall()
               cur.close()
               
@@ -427,8 +417,8 @@ def registroMovPacking(route,deliveryday,OG):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s "
-              cur.execute(sql, (route,deliveryday,status, OG, Site))
+              sql = "SELECT RouteName, FuOrder, Ean, ProductName, OriginalQuantity, CurrentQuantity, Status FROM orders WHERE  CLid=%s AND DeliveryDay=%s AND Status =%s AND OperationGroup=%s AND Site=%s "
+              cur.execute(sql, (clid,deliveryday,status, OG, Site))
               data3 = cur.fetchall()
               cur.close()
               return render_template('actualizacion/Scan.html',Datos =session, data=data2, dataf=data3)
@@ -447,7 +437,6 @@ def registrarReceiving():
           OrderNumber =  request.form['OrderNumber']
         else:
           OrderNumber =  "No aplica"
-
         return render_template('actualizacion/receivingscan.html',Datos =session, ReceivingType=ReceivingType,OrderNumber=OrderNumber)
   except Exception as error: 
     flash(str(error))
@@ -464,7 +453,6 @@ def registroMovReceiving(receivingType,orderNumber):
           timeZ = pytz.timezone('America/Mexico_City')
         elif session['SiteName']=='MEDELLIN01':
           timeZ = pytz.timezone('America/Bogota')
-        
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
@@ -489,12 +477,12 @@ def registroMovReceiving(receivingType,orderNumber):
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Read a single record
-          sql = "SELECT * FROM receivingtable WHERE Ean_Muni =%s  limit 1  "
-          cur.execute(sql, (data[2]))
+          sql = "SELECT Cantidad FROM receivingtable WHERE Ean_Muni =%s AND PurchaseOrder =%s ADN Type=%s  AND Site = %s AND Status =%s limit 1  "
+          cur.execute(sql, (data[2],orderNumber,receivingType,session['SiteName'],'In Process'))
           Rdata = cur.fetchone()
           cur.close()
           if Rdata:
-            cantidadr = int(Rdata[5])+int(catidad2)
+            cantidadr = int(Rdata)+int(catidad2)
             link = connectBD()
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
@@ -526,56 +514,7 @@ def registroMovReceiving(receivingType,orderNumber):
           cur.close()
           return render_template('actualizacion/receivingscan.html',Datos =session, data=data2, ReceivingType=receivingType,OrderNumber=orderNumber)
         else:
-          link = connectBD()
-          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-          cur= db_connection.cursor()
-          # Create a new record
-          sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,Quantity,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
-          cur.execute(sql,(orderNumber,receivingType,ean,cantidad,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
-          # connection is not autocommit by default. So you must commit to save
-          # your changes.
-          db_connection.commit()
-          cur.close()
-          link = connectBD()
-          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-          cur= db_connection.cursor()
-          # Read a single record
-          sql = "SELECT * FROM receivingtable WHERE Ean_Muni =%s  limit 1  "
-          cur.execute(sql, (ean))
-          Rdata = cur.fetchone()
-          cur.close()
-          if Rdata:
-            cantidadr = int(Rdata[5])+int(cantidad)
-            link = connectBD()
-            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-            cur= db_connection.cursor()
-            # Create a new record
-            sql = "UPDATE receivingtable SET  Cantidad =%s, Fecha_de_Actualizacion=%s WHERE PurchaseOrder=%s AND Type=%s AND Ean_Muni=%s AND  Status=%s AND Site=%s "
-            cur.execute(sql,(cantidadr,datetime.now(timeZ),orderNumber,receivingType,ean,'In Process',session['SiteName'],))
-            # connection is not autocommit by default. So you must commit to save
-            # your changes.
-            db_connection.commit()
-            cur.close()
-          else:
-            link = connectBD()
-            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-            cur= db_connection.cursor()
-            # Create a new record
-            sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-            cur.execute(sql,(orderNumber,receivingType,ean,'No reistrado',cantidad,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
-            # connection is not autocommit by default. So you must commit to save
-            # your changes.
-            db_connection.commit()
-            cur.close()
-          link = connectBD()
-          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-          cur= db_connection.cursor()
-          # Read a single record
-          sql = "SELECT PurchaseOrder,	Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
-          cur.execute(sql, (orderNumber,receivingType,session['UserName'],'In Process',session['SiteName'],))
-          data2 = cur.fetchall()
-          cur.close()
-          return render_template('actualizacion/receivingscan.html',Datos =session, data=data2, ReceivingType=receivingType,OrderNumber=orderNumber)
+          return render_template('actualizacion/Searchproduct.html',Datos =session,ean=ean)
   except Exception as error: 
     flash(str(error))
     return redirect('/Receiving')
@@ -700,7 +639,7 @@ def registrarInventory():
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
-            sql = "SELECT PurchaseOrder,	Type,Ean,EanMuni, Description, sum(Quantity) FROM receiving WHERE  PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s AND Site=%s GROUP BY PurchaseOrder,	Type,Ean, EanMuni, Description"
+            sql = "SELECT Type,Ean,EanMuni, Description, sum(Quantity) FROM receiving WHERE  PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s AND Site=%s GROUP BY PurchaseOrder,	Type,Ean, EanMuni, Description"
             cur.execute(sql, (orderNumber,receivingType,session['UserName'],'In Process',session['SiteName'],))
             data2 = cur.fetchall()
             cur.close()
@@ -2376,7 +2315,7 @@ def crear_csvreceiving():
         cur.execute('SELECT * FROM receiving WHERE Site =\'{}\' ORDER BY ID_Receiving DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
         data = cur.fetchall()
         cur.close()
-    datos="ID Receiving"+","+"Purchase Order"+","+"Type"+","+"Ean"+","+"Ean Muni"+","+"Conversion Unit"+","+"Quantity"+","+"Description"+"Responsible"+","+"Status"+","+"	Site"+","+"	Date Time"+"\n"
+    datos="ID Receiving"+","+"Orden de Compra"+","+"Tipo"+","+"Ean"+","+"Ean Muni"+","+"Unidad de Converción"+","+"Cantidad"+","+"Descripción"+","+"Responsable"+","+"Status"+","+"	Site"+","+"Fecha y Hora"+"\n"
     for res in data:
       datos+=str(res[0])
       datos+=","+str(res[1]).replace(","," ")

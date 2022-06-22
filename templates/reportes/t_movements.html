@@ -35,13 +35,13 @@
     <div class="filtros">
         <form action="/Reporte_movements/0" method="post" class="form_filtros">
             <select name="filtro">
-                <option value="RouteName">Route Name</option>
+                <option value="RouteName">Ruta</option>
                 <option value="FuOrder">Fu Order</option>
                 <option value="CLid">CL id</option>
                 <option value="Ean">Ean</option>
-                <option value="Description">Description</option>
-                <option value="Process">Process</option>
-                <option value="Responsible">Responsible</option>
+                <option value="Description">Descripción</option>
+                <option value="Process">Proceso</option>
+                <option value="Responsible">Responsable</option>
             </select>
             <input autocomplete="off" type="text" name="valor">
             <label for="datefilter">Fecha: </label>
@@ -56,15 +56,15 @@
             <table>
                 <thead >
                     <tr class="head">
-                        <th> Route Name	 </th>
+                        <th> Ruta	 </th>
                         <th> Fu Order </th>
                         <th> CL id </th>
                         <th> Ean </th>
-                        <th> Description </th>
-                        <th> Quantity </th>
-                        <th> Process </th>
-                        <th> Responsible </th>
-                        <th> DateTime </th>
+                        <th> Descripción </th>
+                        <th> Cantidad </th>
+                        <th> Proceso </th>
+                        <th> Responsable </th>
+                        <th> Fecha y Hora </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,7 +82,7 @@
                     </tr>
                     {%endfor%}
                     <tr class="Pag">
-                        <td colspan="13" class="Pag">
+                        <td colspan="10" class="Pag">
                             {%set row= Datos['rowi_movements'] |int%}
                             {%if row==0%}
                             <a href="/Reporte_movements/0" class="after">
