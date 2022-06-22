@@ -477,41 +477,40 @@ def registroMovReceiving(receivingType,orderNumber):
         cur.execute(sql, (data[2],orderNumber,receivingType,session['SiteName'],'In Process'))
         Rdata = cur.fetchone()
         cur.close()
-        return Rdata
-      #   if Rdata:
-      #     cantidadr = int(Rdata)+int(catidad2)
-      #     link = connectBD()
-      #     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-      #     cur= db_connection.cursor()
-      #     # Create a new record
-      #     sql = "UPDATE receivingtable SET  Cantidad =%s, Fecha_de_Actualizacion=%s WHERE PurchaseOrder=%s AND Type=%s AND Ean_Muni=%s AND  Status=%s AND Site=%s "
-      #     cur.execute(sql,(cantidadr,datetime.now(timeZ),orderNumber,receivingType,data[2],'In Process',session['SiteName'],))
-      #     # connection is not autocommit by default. So you must commit to save
-      #     # your changes.
-      #     db_connection.commit()
-      #     cur.close()
-      #   else:
-      #     link = connectBD()
-      #     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-      #     cur= db_connection.cursor()
-      #     # Create a new record
-      #     sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-      #     cur.execute(sql,(orderNumber,receivingType,data[2],data[3],catidad2,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
-      #     # connection is not autocommit by default. So you must commit to save
-      #     # your changes.
-      #     db_connection.commit()
-      #     cur.close()
-      #   link = connectBD()
-      #   db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
-      #   cur= db_connection.cursor()
-      #   # Read a single record
-      #   sql = "SELECT PurchaseOrder,	Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
-      #   cur.execute(sql, (orderNumber,receivingType,session['UserName'],'In Process',session['SiteName'],))
-      #   data2 = cur.fetchall()
-      #   cur.close()
-      #   return render_template('actualizacion/receivingscan.html',Datos =session, data=data2, ReceivingType=receivingType,OrderNumber=orderNumber)
-      # else:
-      #   return render_template('actualizacion/Searchproduct.html',Datos =session,ean=ean,cantidad=cantidad,ReceivingType=receivingType,OrderNumber=orderNumber)
+        if Rdata:
+          cantidadr = int(Rdata)+int(catidad2)
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          # Create a new record
+          sql = "UPDATE receivingtable SET  Cantidad =%s, Fecha_de_Actualizacion=%s WHERE PurchaseOrder=%s AND Type=%s AND Ean_Muni=%s AND  Status=%s AND Site=%s "
+          cur.execute(sql,(cantidadr,datetime.now(timeZ),orderNumber,receivingType,data[2],'In Process',session['SiteName'],))
+          # connection is not autocommit by default. So you must commit to save
+          # your changes.
+          db_connection.commit()
+          cur.close()
+        else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          # Create a new record
+          sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+          cur.execute(sql,(orderNumber,receivingType,data[2],data[3],catidad2,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
+          # connection is not autocommit by default. So you must commit to save
+          # your changes.
+          db_connection.commit()
+          cur.close()
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+        cur= db_connection.cursor()
+        # Read a single record
+        sql = "SELECT PurchaseOrder,	Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
+        cur.execute(sql, (orderNumber,receivingType,session['UserName'],'In Process',session['SiteName'],))
+        data2 = cur.fetchall()
+        cur.close()
+        return render_template('actualizacion/receivingscan.html',Datos =session, data=data2, ReceivingType=receivingType,OrderNumber=orderNumber)
+      else:
+        return render_template('actualizacion/Searchproduct.html',Datos =session,ean=ean,cantidad=cantidad,ReceivingType=receivingType,OrderNumber=orderNumber)
   except Exception as error: 
     flash(str(error))
     return redirect('/Receiving')
