@@ -459,7 +459,7 @@ def registroMovReceiving(receivingType,orderNumber):
       cur.close()
       if data:
         fc=data[4]
-        catidad2= int(cantidad)*fc
+        catidad2= int(cantidad)*int(fc)
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
@@ -479,7 +479,7 @@ def registroMovReceiving(receivingType,orderNumber):
         Rdata = cur.fetchone()
         cur.close()
         if Rdata:
-          cantidadr = Rdata+catidad2
+          cantidadr = int(Rdata[0])+int(catidad2)
           link = connectBD()
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
@@ -525,6 +525,17 @@ def cerrarReceiving(receivingType,orderNumber):
     cur= db_connection.cursor()
     # Create a new record
     sql = "UPDATE receiving SET Status = %s WHERE PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s"
+    cur.execute(sql,('received',orderNumber,receivingType,session['UserName'],'In Process',))
+    # connection is not autocommit by default. So you must commit to save
+    # your changes.
+    db_connection.commit()
+    cur.close()
+    
+    link = connectBD()
+    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")    
+    cur= db_connection.cursor()
+    # Create a new record
+    sql = "UPDATE receivingtable SET Status = %s WHERE PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s"
     cur.execute(sql,('received',orderNumber,receivingType,session['UserName'],'In Process',))
     # connection is not autocommit by default. So you must commit to save
     # your changes.
@@ -721,7 +732,7 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
         Rdata = cur.fetchone()
         cur.close()
         if Rdata:
-          cantidadr = int(Rdata)+int(catidad2)
+          cantidadr = int(Rdata[0])+int(catidad2)
           link = connectBD()
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
