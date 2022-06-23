@@ -535,8 +535,8 @@ def cerrarReceiving(receivingType,orderNumber):
     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")    
     cur= db_connection.cursor()
     # Create a new record
-    sql = "UPDATE receivingtable SET Status = %s WHERE PurchaseOrder=%s AND Type=%s AND  Responsible =%s AND Status=%s"
-    cur.execute(sql,('received',orderNumber,receivingType,session['UserName'],'In Process',))
+    sql = "UPDATE receivingtable SET Status = %s WHERE PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site =%s"
+    cur.execute(sql,('received',orderNumber,receivingType,session['UserName'],'In Process',session['SiteName']))
     # connection is not autocommit by default. So you must commit to save
     # your changes.
     db_connection.commit()
