@@ -31,7 +31,7 @@
         <div class="fondo"></div>
         <section>
             <!-- enctype="multipart/form-data" -->
-            {% if receivingType %}
+            {% if receivingType || OrderNumber %}
             <form class="form_file" action="/SearchProductrec/{{ean}}/{{cantidad}}/{{ReceivingType}}/{{OrderNumber}} " method="POST" " >
                 <h2> Buscar Producto </h2>
                 <span>Ean: '{{ean}}'  no registrado en catalogo</span>

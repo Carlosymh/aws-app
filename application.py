@@ -675,7 +675,6 @@ def formsearch():
 def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
   try:
     if request.method == 'POST':
-
       EAN_MUNI =  request.form['EAN_MUNI']
       Producto =  request.form['Producto']
       if session['SiteName']=='CDMX01':
@@ -748,7 +747,7 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Read a single record
-        sql = "SELECT PurchaseOrder,	Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
+        sql = "SELECT PurchaseOrder,Type,Ean_Muni, Descripcion, Cantidad,Fecha_de_Actualizacion FROM receivingtable WHERE  PurchaseOrder=%s AND Type=%s AND  Responsable =%s AND Status=%s AND Site=%s ORDER BY Fecha_de_Actualizacion DESC"
         cur.execute(sql, (OrderNumber,ReceivingType,session['UserName'],'In Process',session['SiteName'],))
         data2 = cur.fetchall()
         cur.close()
