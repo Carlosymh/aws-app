@@ -458,7 +458,8 @@ def registroMovReceiving(receivingType,orderNumber):
       data = cur.fetchone()
       cur.close()
       if data:
-        catidad2= int(cantidad)*int(data[4])
+        fc=data[4]
+        catidad2= int(cantidad)*fc
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
@@ -478,7 +479,7 @@ def registroMovReceiving(receivingType,orderNumber):
         Rdata = cur.fetchone()
         cur.close()
         if Rdata:
-          cantidadr = int(Rdata)+int(catidad2)
+          cantidadr = Rdata+catidad2
           link = connectBD()
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
@@ -2755,4 +2756,4 @@ def uploadFiles():
 
 # fuction main   
 # if __name__=='__main__':
-    # application.run(port = 300, debug =True)
+    # application.run(port=300, debug =True)
