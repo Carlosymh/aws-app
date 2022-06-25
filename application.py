@@ -2431,21 +2431,21 @@ def crear_csvreceiving():
     datos="ID Receiving"+","+"Orden de Compra"+","+"Tipo"+","+"Ean"+","+"Ean Muni"+","+"Unidad de Converción"+","+"Cantidad"+","+"Descripción"+","+"Responsable"+","+"Status"+","+"	Site"+","+"Fecha y Hora"+"\n"
     for res in data:
       datos+=str(res[0])
-      datos+=","+str(res[1]).replace(","," ")
-      datos+=","+str(res[2]).replace(","," ")
-      datos+=","+str(res[3]).replace(","," ")
-      datos+=","+str(res[4]).replace(","," ")
-      datos+=","+str(res[5]).replace(","," ")
-      datos+=","+str(res[6]).replace(","," ")
-      datos+=","+str(res[7]).replace(","," ")
-      datos+=","+str(res[8]).replace(","," ")
-      datos+=","+str(res[9]).replace(","," ")
-      datos+=","+str(res[10]).replace(","," ")
-      datos+=","+str(res[11]).replace(","," ")
+      datos+=","+str(res[1].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[2].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[3].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[4].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[5].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[6].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[7].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[8].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[9].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[10].encode('utf-8')).replace(","," ")
+      datos+=","+str(res[11].encode('utf-8')).replace(","," ")
       datos+="\n"
 
     response = make_response(datos)
-    response.headers["Content-Disposition"] = "attachment; encoding="+"utf-8"+"; filename="+"Reportre_receiving-"+str(datetime.today())+".csv"; 
+    response.headers["Content-Disposition"] = "attachment; encoding=utf-8; filename="+"Reportre_receiving-"+str(datetime.today())+".csv"; 
     return response
   except Exception as error: 
     flash(str(error))
