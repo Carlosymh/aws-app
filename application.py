@@ -2676,14 +2676,14 @@ def uploadFiles():
       Base =request.form['base']
       if Base=='Product':
         file.save(os.path.join(UPLOAD_FOLDER, "datos.csv"))
-        with open(UPLOAD_FOLDER+'datos.csv',"r", encoding="latin-1") as csv_file:
+        with open(UPLOAD_FOLDER+'datos.csv',"r", encoding="latin-1", errors='ignore') as csv_file:
           data=csv.reader(csv_file, delimiter=',')
           i=0
           for row in data:
             if i >0:
               if row[2] != '#N/A':
                 link = connectBD()
-                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="latin-1", init_command="set names latin-1")
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Create a new record
                 sql = "INSERT INTO product (CB_Captura,  EAN_MUNI, Producto, Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
