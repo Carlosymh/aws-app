@@ -2444,8 +2444,8 @@ def crear_csvreceiving():
       datos+=","+str(res[11]).replace(","," ")
       datos+="\n"
 
-    response = make_response(datos.encode('utf-8'))
-    response.headers["Content-Disposition"] = "attachment; encoding=utf-8; filename="+"Reportre_receiving-"+str(datetime.today())+".csv"; 
+    response = make_response(datos.encode('latin-1'))
+    response.headers["Content-Disposition"] = "attachment; encoding=latin-1; filename="+"Reportre_receiving-"+str(datetime.today())+".csv"; 
     return response
   except Exception as error: 
     flash(str(error))
