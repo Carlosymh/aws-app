@@ -439,9 +439,8 @@ def registrarReceiving():
 @application.route('/RegistrarReceivingP/<ReceivingType>',methods=['GET'])
 def registrarReceivingp(ReceivingType):
   try:
-        ReceivingType =  request.form['ReceivingType']
-        OrderNumber =  "No aplica"
-        return render_template('actualizacion/receivingscan.html',Datos =session, ReceivingType=ReceivingType,OrderNumber=OrderNumber)
+    OrderNumber =  "No aplica"
+    return render_template('actualizacion/receivingscan.html',Datos =session, ReceivingType=ReceivingType,OrderNumber=OrderNumber)
   except Exception as error: 
     flash(str(error))
     return redirect('/Packing')
