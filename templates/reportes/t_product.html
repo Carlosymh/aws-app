@@ -18,7 +18,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script src="https://kit.fontawesome.com/206b5ce088.js" crossorigin="anonymous"></script>
-    <title>Reporte Orders</title>
+    <title>Productos</title>
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -35,21 +35,9 @@
     <div class="filtros">
         <form action="/Reporte_orders/0" method="post" class="form_filtros">
             <select name="filtro">
-                <option value="RouteName">Ruta</option>
-                <option value="FUName">	FU Name</option>
-                <option value="Service_Zone">Zona de servicio</option>
-                <option value="FK_order">FK Order</option>
-                <option value="Packer">Packer</option>
-                <option value="FuOrder">FuOrder</option>
-                <option value="Ean">Ean</option>
-                <option value="OperationGroup">Operation Group</option>
-                <option value="ProductName">Descripción</option>
-                <option value="Type">Type</option>
-                <option value="Vendedor">Vendedor</option>
-                <option value="CLid">CLid</option>
-                <option value="Stop">Stop</option>
-                <option value="Status">Estatus</option>
-                <option value="responsable">Responsable</option>
+                <option value="CB_Captura">CB Captura</option>
+                <option value="EAN_MUNI">EAN MUNI</option>
+                <option value="Producto">Producto</option>
             </select>
             <input autocomplete="off" type="text" name="valor"> value="Buscar">
         </form>

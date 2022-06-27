@@ -459,17 +459,48 @@ def registroMovReceiving(receivingType,orderNumber):
       cur.close()
       if data:
         fc=data[4]
-        catidad2= int(cantidad)*int(fc)
+        cantidad2= int(cantidad)*int(fc)
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Create a new record
         sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-        cur.execute(sql,(orderNumber,receivingType,ean,data[2],data[4],catidad2,data[3],session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
+        cur.execute(sql,(orderNumber,receivingType,ean,data[2],data[4],cantidad2,data[3],session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
         # connection is not autocommit by default. So you must commit to save
         # your changes.
         db_connection.commit()
         cur.close()
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")  
+        cur= db_connection.cursor()
+        # Read a single record
+        sql = "SELECT * FROM inventory WHERE CB_Captura =%s  limit 1  "
+        cur.execute(sql, (ean))
+        datainv = cur.fetchone()
+        cur.close()
+        if datainv:
+          cantidad3=int(datainv[5])+cantidad2
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          # Create a new record
+          sql = "UPDATE inventory SET Cantidad_Actual=%s, inventoryUser=%s WHERE CB_Captura=%s AND Site=%s"
+          cur.execute(sql,(cantidad3,session['UserName'],ean, session['SiteName'],))
+          # connection is not autocommit by default. So you must commit to save
+          # your changes.
+          db_connection.commit()
+          cur.close()
+        else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          # Create a new record
+          sql = "INSERT INTO inventory (CB_Captura,EAN_MUNI,Producto,Cantidad_Anterior,Cantidad_Actual,Unidad_de_Medida,Status,inventoryUser,Fecha_de_Actualizacion,Site) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+          cur.execute(sql,(ean,data[2],data[3],0,cantidad2,data[4],'In Process',session['UserName'],datetime.now(timeZ),session['SiteName'],))
+          # connection is not autocommit by default. So you must commit to save
+          # your changes.
+          db_connection.commit()
+          cur.close()
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
@@ -479,7 +510,7 @@ def registroMovReceiving(receivingType,orderNumber):
         Rdata = cur.fetchone()
         cur.close()
         if Rdata:
-          cantidadr = int(Rdata[0])+int(catidad2)
+          cantidadr = int(Rdata[0])+int(cantidad2)
           link = connectBD()
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
@@ -496,7 +527,7 @@ def registroMovReceiving(receivingType,orderNumber):
           cur= db_connection.cursor()
           # Create a new record
           sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-          cur.execute(sql,(orderNumber,receivingType,data[2],data[3],catidad2,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
+          cur.execute(sql,(orderNumber,receivingType,data[2],data[3],cantidad2,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
           # connection is not autocommit by default. So you must commit to save
           # your changes.
           db_connection.commit()
@@ -712,17 +743,48 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
       data = cur.fetchone()
       cur.close()
       if data:
-        catidad2= int(cantidad)*int(data[4])
+        cantidad2= int(cantidad)*int(data[4])
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
         # Create a new record
         sql = "INSERT INTO receiving (PurchaseOrder,Type,Ean,EanMuni,ConversionUnit	,Quantity,Description,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-        cur.execute(sql,(OrderNumber,ReceivingType,ean,data[2],data[4],catidad2,data[3],session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
+        cur.execute(sql,(OrderNumber,ReceivingType,ean,data[2],data[4],cantidad2,data[3],session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
         # connection is not autocommit by default. So you must commit to save
         # your changes.
         db_connection.commit()
         cur.close()
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")  
+        cur= db_connection.cursor()
+        # Read a single record
+        sql = "SELECT * FROM inventory WHERE CB_Captura =%s  limit 1  "
+        cur.execute(sql, (ean))
+        datainv = cur.fetchone()
+        cur.close()
+        if datainv:
+          cantidad3=int(datainv[5])+cantidad2
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          # Create a new record
+          sql = "UPDATE inventory SET Cantidad_Actual=%s, inventoryUser=%s WHERE CB_Captura=%s AND Site=%s"
+          cur.execute(sql,(cantidad3,session['UserName'],ean, session['SiteName'],))
+          # connection is not autocommit by default. So you must commit to save
+          # your changes.
+          db_connection.commit()
+          cur.close()
+        else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          # Create a new record
+          sql = "INSERT INTO inventory (CB_Captura,EAN_MUNI,Producto,Cantidad_Anterior,Cantidad_Actual,Unidad_de_Medida,Status,inventoryUser,Fecha_de_Actualizacion,Site) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+          cur.execute(sql,(ean,data[2],data[3],0,cantidad2,data[4],'In Process',session['UserName'],datetime.now(timeZ),session['SiteName'],))
+          # connection is not autocommit by default. So you must commit to save
+          # your changes.
+          db_connection.commit()
+          cur.close()
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
@@ -732,7 +794,7 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
         Rdata = cur.fetchone()
         cur.close()
         if Rdata:
-          cantidadr = int(Rdata[0])+int(catidad2)
+          cantidadr = int(Rdata[0])+int(cantidad2)
           link = connectBD()
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
@@ -749,7 +811,7 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
           cur= db_connection.cursor()
           # Create a new record
           sql = "INSERT INTO receivingtable (	PurchaseOrder,Type,Ean_Muni,Descripcion,Cantidad,Responsable,	Site,	Status,Fecha_de_Actualizacion) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-          cur.execute(sql,(OrderNumber,ReceivingType,data[2],data[3],catidad2,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
+          cur.execute(sql,(OrderNumber,ReceivingType,data[2],data[3],cantidad2,session['UserName'],session['SiteName'],'In Process',datetime.now(timeZ),))
           # connection is not autocommit by default. So you must commit to save
           # your changes.
           db_connection.commit()
@@ -1649,7 +1711,7 @@ def reporte_product(rowi):
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
-            sql = "SELECT * FROM product WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['filtro_product'],session['valor_product'],session['SiteName'],row1,row2)
+            sql = "SELECT * FROM product WHERE {} LIKE \'%{}%\'  ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['filtro_product'],session['valor_product'],row1,row2)
             cur.execute(sql)
             data = cur.fetchall()
             cur.close()
@@ -1662,7 +1724,7 @@ def reporte_product(rowi):
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
-            sql = "SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+            sql = "SELECT * FROM product  ORDER BY ID_Product DESC  LIMIT {}, {}".format(row1,row2)
             cur.execute(sql)
             data = cur.fetchall()
             cur.close()
@@ -1674,7 +1736,7 @@ def reporte_product(rowi):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM product WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['filtro_product'],session['valor_product'],session['SiteName'],row1,row2)
+              sql = "SELECT * FROM product WHERE {} LIKE \'%{}%\'  ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['filtro_product'],session['valor_product'],row1,row2)
               cur.execute(sql)
               data = cur.fetchall()
               cur.close()
@@ -1686,7 +1748,7 @@ def reporte_product(rowi):
               db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
               cur= db_connection.cursor()
               # Read a single record
-              sql = "SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+              sql = "SELECT * FROM product ORDER BY ID_Product DESC  LIMIT {}, {}".format(row1,row2)
               cur.execute(sql)
               data = cur.fetchall()
               cur.close()
@@ -1696,7 +1758,7 @@ def reporte_product(rowi):
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
-            sql = "SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+            sql = "SELECT * FROM product  ORDER BY ID_Product DESC  LIMIT {}, {}".format(row1,row2)
             cur.execute(sql)
             data = cur.fetchall()
             cur.close()
@@ -1715,7 +1777,7 @@ def reporte_product(rowi):
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
-            sql = "SELECT * FROM product WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['filtro_product'],session['valor_product'],session['SiteName'],row1,row2)
+            sql = "SELECT * FROM product WHERE {} LIKE \'%{}%\'  ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['filtro_product'],session['valor_product'],row1,row2)
             cur.execute(sql)
             data = cur.fetchall()
             cur.close()
@@ -1727,7 +1789,7 @@ def reporte_product(rowi):
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Read a single record
-            sql = "SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+            sql = "SELECT * FROM product  ORDER BY ID_Product DESC  LIMIT {}, {}".format(row1,row2)
             cur.execute(sql)
             data = cur.fetchall()
             cur.close()
@@ -1737,7 +1799,7 @@ def reporte_product(rowi):
           db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
           cur= db_connection.cursor()
           # Read a single record
-          sql = "SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+          sql = "SELECT * FROM product ORDER BY ID_Product DESC  LIMIT {}, {}".format(row1,row2)
           cur.execute(sql)
           data = cur.fetchall()
           cur.close()
@@ -2216,21 +2278,21 @@ def crear_csvproduct():
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
-        cur.execute('SELECT * FROM product WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}'.format(session['filtro_product'],session['valor_product'],session['SiteName'],row1,row2))
+        cur.execute('SELECT * FROM product WHERE {} LIKE \'%{}%\'  ORDER BY ID_Product DESC  LIMIT {}, {}'.format(session['filtro_product'],session['valor_product'],row1,row2))
         data = cur.fetchall()
         cur.close()
       else:
         link = connectBD()
         db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
         cur= db_connection.cursor()
-        cur.execute('SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+        cur.execute('SELECT * FROM product ORDER BY ID_Product DESC  LIMIT {}, {}'.format(row1,row2))
         data = cur.fetchall()
         cur.close()
     else:
       link = connectBD()
       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
-      cur.execute('SELECT * FROM product WHERE Site =\'{}\' ORDER BY ID_Product DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+      cur.execute('SELECT * FROM product  ORDER BY ID_Product DESC  LIMIT {}, {}'.format(row1,row2))
       data = cur.fetchall()
       cur.close()
     datos="ID Product"+","+"CB Captura"+","+"EAN MUNI"+","+"Producto"+","+"Factor de Conversión"+"\n"
