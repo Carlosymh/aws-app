@@ -33,7 +33,7 @@
     {% endblock %}
     {% block body%}
     <div class="filtros">
-        <form action="/Reporte_movements/0" method="post" class="form_filtros">
+        <form action="/ReporteInventori/0" method="post" class="form_filtros">
             <select name="filtro">
                 <option value="RouteName">Ruta</option>
                 <option value="FuOrder">Fu Order</option>
@@ -49,22 +49,23 @@
             </label>
             <input type="submit" value="Buscar">
         </form>
-        <a href="/csvmovements" target="_blank" class="download_csv"><i class="fas fa-file-download"></i>  Descargar</a>
+        <a href="/csvinventory" target="_blank" class="download_csv"><i class="fas fa-file-download"></i>  Descargar</a>
     </div>
         <div class="fondo">
         <section>
             <table>
                 <thead >
                     <tr class="head">
-                        <th> Ruta	 </th>
-                        <th> Fu Order </th>
-                        <th> CL id </th>
-                        <th> Ean </th>
-                        <th> Descripción </th>
-                        <th> Cantidad </th>
-                        <th> Proceso </th>
-                        <th> Responsable </th>
-                        <th> Fecha y Hora </th>
+                        <th> CB Captura </th>
+                        <th> EAN MUNI </th>
+                        <th> Producto </th>
+                        <th> Cantidad Anterior </th>
+                        <th> Cantidad Actual </th>
+                        <th> Unidad de Medida </th>
+                        <th> Status </th>
+                        <th> inventoryUser </th>
+                        <th> Fecha de Actualizacion </th>
+                        <th> Site </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,42 +79,43 @@
                         <td>{{Info.6}}</td>
                         <td>{{Info.7}}</td>
                         <td>{{Info.8}}</td>
+                        <td>{{Info.9}}</td>
                         <td>{{Info.10}}</td>
                     </tr>
                     {%endfor%}
                     <tr class="Pag">
                         <td colspan="10" class="Pag">
-                            {%set row= Datos['rowi_movements'] |int%}
+                            {%set row= Datos['rowi_inventori'] |int%}
                             {%if row==0%}
-                            <a href="/Reporte_movements/0" class="after">
+                            <a href="/ReporteInventori/0" class="after">
                                 <i class="fas fa-angle-double-left">
                                 </i>
                             </a>
                             {%else%}
                             {%set rowMenos=row-50 | int%}
-                            <a href="/Reporte_movements/{{rowMenos}}" class="after">
+                            <a href="/ReporteInventori/{{rowMenos}}" class="after">
                                 <i class="fas fa-angle-double-left">
                                 </i>
                             </a>
                             {%endif%}
                             {%set rowMas=row+50 | int%}
-                            <a href="/Reporte_movements/0" class="in"> 1 </a>
-                            <a href="/Reporte_movements/50" class="in"> 2 </a>
-                            <a href="/Reporte_movements/100" class="in"> 3 </a>
-                            <a href="/Reporte_movements/150" class="in"> 4 </a>
-                            <a href="/Reporte_movements/200" class="in"> 5 </a>
-                            <a href="/Reporte_movements/250" class="in"> 6 </a>
-                            <a href="/Reporte_movements/300" class="in"> 7 </a>
-                            <a href="/Reporte_movements/350" class="in"> 8 </a>
-                            <a href="/Reporte_movements/400" class="in"> 9 </a>
-                            <a href="/Reporte_movements/450" class="in"> 10 </a>
+                            <a href="/ReporteInventori/0" class="in"> 1 </a>
+                            <a href="/ReporteInventori/50" class="in"> 2 </a>
+                            <a href="/ReporteInventori/100" class="in"> 3 </a>
+                            <a href="/ReporteInventori/150" class="in"> 4 </a>
+                            <a href="/ReporteInventori/200" class="in"> 5 </a>
+                            <a href="/ReporteInventori/250" class="in"> 6 </a>
+                            <a href="/ReporteInventori/300" class="in"> 7 </a>
+                            <a href="/ReporteInventori/350" class="in"> 8 </a>
+                            <a href="/ReporteInventori/400" class="in"> 9 </a>
+                            <a href="/ReporteInventori/450" class="in"> 10 </a>
                             {%if row >= 450 %}
                             {% set numpag=(row/50)+1 |int%}
                             <span class="in">    </span>
-                            <a href="/Reporte_movements/{{(numpag*50) |int}}" class="in"> {{numpag | int}} </a>
-                            <a href="/Reporte_movements/{{((numpag+1)*50) |int}}" class="in"> {{(numpag+1) |int}} </a>
+                            <a href="/ReporteInventori/{{(numpag*50) |int}}" class="in"> {{numpag | int}} </a>
+                            <a href="/ReporteInventori/{{((numpag+1)*50) |int}}" class="in"> {{(numpag+1) |int}} </a>
                             {%endif%}
-                            <a href="/Reporte_movements/{{rowMas}}" class="before">
+                            <a href="/ReporteInventori/{{rowMas}}" class="before">
                                 <i class="fas fa-angle-double-right">
                                 </i>
                             </a>

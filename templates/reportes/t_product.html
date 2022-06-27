@@ -51,37 +51,19 @@
                 <option value="Status">Estatus</option>
                 <option value="responsable">Responsable</option>
             </select>
-            <input autocomplete="off" type="text" name="valor">
-            <label   for="datefilter">Fecha: </label>
-            <input autocomplete="off" type="text" name="datefilter" value="" />
-            </label>
-            <input type="submit" value="Buscar">
+            <input autocomplete="off" type="text" name="valor"> value="Buscar">
         </form>
-        <a href="/csvorders" target="_blank" class="download_csv"><i class="fas fa-file-download"></i>  Descargar</a>
+        <a href="/csvproduct" target="_blank" class="download_csv"><i class="fas fa-file-download"></i>  Descargar</a>
     </div>
         <div class="fondo">
         <section>
             <table>
-                <thead >
+                <thead>
                     <tr class="head">
-                        <th> Ruta </th>
-                        <th> FU NAME</th>
-                        <th> Zona de servicio</th>
-                        <th> FK ORDER</th>
-                        <th> PACKER </th>
-                        <th> FU ORDER </th>
-                        <th> EAN </th>
-                        <th> OPERATION GROUP </th>
-                        <th> Descripción </th>
-                        <th> TYPE </th>
-                        <th> Dia de entrega</th>
-                        <th> Cantidad Solicitada </th>
-                        <th> Vendedor </th>
-                        <th> CL ID </th>
-                        <th> STOP</th>
-                        <th> Cantidad Surtida</th>
-                        <th> Cantidad Pendiente</th>
-                        <th> Estatus </th>
+                        <th> CB Captura </th>
+                        <th> EAN MUNI</th>
+                        <th> Producto</th>
+                        <th> Factor de Conversión</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,55 +73,41 @@
                         <td>{{Info.2}}</td>
                         <td>{{Info.3}}</td>
                         <td>{{Info.4}}</td>
-                        <td>{{Info.5}}</td>
-                        <td>{{Info.6}}</td>
-                        <td>{{Info.7}}</td>
-                        <td>{{Info.8}}</td>
-                        <td>{{Info.9}}</td>
-                        <td>{{Info.10}}</td>
-                        <td>{{Info.11}}</td>
-                        <td>{{Info.12}}</td>
-                        <td>{{Info.13}}</td>
-                        <td>{{Info.14}}</td>
-                        <td>{{Info.15}}</td>
-                        <td>{{Info.16}}</td>
-                        <td>{{Info.17}}</td>
-                        <td>{{Info.18}}</td>
                     </tr>
                     {%endfor%}
                     <tr class="Pag">
                         <td colspan="18" class="Pag">
-                            {%set row= Datos['rowi_orders'] |int%}
+                            {%set row= Datos['rowi_product'] |int%}
                             {%if row==0%}
-                            <a href="/Reporte_orders/0" class="after">
+                            <a href="/ReporteProducts/0" class="after">
                                 <i class="fas fa-angle-double-left">
                                 </i>
                             </a>
                             {%else%}
                             {%set rowMenos=row-50 | int%}
-                            <a href="/Reporte_orders/{{rowMenos}}" class="after">
+                            <a href="/ReporteProducts/{{rowMenos}}" class="after">
                                 <i class="fas fa-angle-double-left">
                                 </i>
                             </a>
                             {%endif%}
                             {%set rowMas=row+50 | int%}
-                            <a href="/Reporte_orders/0" class="in"> 1 </a>
-                            <a href="/Reporte_orders/50" class="in"> 2 </a>
-                            <a href="/Reporte_orders/100" class="in"> 3 </a>
-                            <a href="/Reporte_orders/150" class="in"> 4 </a>
-                            <a href="/Reporte_orders/200" class="in"> 5 </a>
-                            <a href="/Reporte_orders/250" class="in"> 6 </a>
-                            <a href="/Reporte_orders/300" class="in"> 7 </a>
-                            <a href="/Reporte_orders/350" class="in"> 8 </a>
-                            <a href="/Reporte_orders/400" class="in"> 9 </a>
-                            <a href="/Reporte_orders/450" class="in"> 10 </a>
+                            <a href="/ReporteProducts/0" class="in"> 1 </a>
+                            <a href="/ReporteProducts/50" class="in"> 2 </a>
+                            <a href="/ReporteProducts/100" class="in"> 3 </a>
+                            <a href="/ReporteProducts/150" class="in"> 4 </a>
+                            <a href="/ReporteProducts/200" class="in"> 5 </a>
+                            <a href="/ReporteProducts/250" class="in"> 6 </a>
+                            <a href="/ReporteProducts/300" class="in"> 7 </a>
+                            <a href="/ReporteProducts/350" class="in"> 8 </a>
+                            <a href="/ReporteProducts/400" class="in"> 9 </a>
+                            <a href="/ReporteProducts/450" class="in"> 10 </a>
                             {%if row >= 450 %}
                             {% set numpag=(row/50)+1 |int%}
                             <span class="in">    </span>
-                            <a href="/Reporte_orders/{{(numpag*50) |int}}" class="in"> {{numpag | int}} </a>
-                            <a href="/Reporte_orders/{{((numpag+1)*50) |int}}" class="in"> {{(numpag+1) |int}} </a>
+                            <a href="/ReporteProducts/{{(numpag*50) |int}}" class="in"> {{numpag | int}} </a>
+                            <a href="/ReporteProducts/{{((numpag+1)*50) |int}}" class="in"> {{(numpag+1) |int}} </a>
                             {%endif%}
-                            <a href="/Reporte_orders/{{rowMas}}" class="before">
+                            <a href="/ReporteProducts/{{rowMas}}" class="before">
                                 <i class="fas fa-angle-double-right">
                                 </i>
                             </a>
@@ -149,23 +117,4 @@
             </table>
         </section>
     </div>
-    <script type="text/javascript">
-        $(function() {
-          $('input[name="datefilter"]').daterangepicker({
-              autoUpdateInput: false,
-              locale: {
-                  cancelLabel: 'Clear'
-              }
-          });
-        
-          $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
-              $(this).val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
-          });
-        
-          $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
-              $(this).val('');
-          });
-        
-        });
-        </script>
 {% endblock %}
