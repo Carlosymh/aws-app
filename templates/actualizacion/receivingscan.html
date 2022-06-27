@@ -32,10 +32,11 @@
         <section class="form-register">
             <form id="contact-form" name="contact-form" class="contact-form" method="post" action="/RegistroMovReceiving/{{ReceivingType}}/{{OrderNumber}}">
                 <h2 class="titulo2"> Escanea un ean</h2>
-                    {%if data %}
                     {%if OrderNumber != "No aplica" %}
+                    <h2> {{ReceivingType}}</h2>
                     <h2> O.C : {{OrderNumber}}</h2>
-                    {%endif%}
+                    {%else%}
+                    <h2>{{ReceivingType}}</h2>
                     {%endif%}
                     <label for="cantidad"> Cantidad:
                         <input name="cantidad" type="number"  value="1"  required>
