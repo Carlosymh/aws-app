@@ -2270,7 +2270,6 @@ def crear_csvreceiving():
 @application.route('/csvproduct',methods=['POST','GET'])
 def crear_csvproduct():
   try:
-    site=session['SiteName']
     row1 = 0
     row2 =50000
     if 'valor_product' in session:
@@ -2302,21 +2301,6 @@ def crear_csvproduct():
       datos+=","+str(res[2]).replace(","," ")
       datos+=","+str(res[3]).replace(","," ")
       datos+=","+str(res[4]).replace(","," ")
-      datos+=","+str(res[5]).replace(","," ")
-      datos+=","+str(res[6]).replace(","," ")
-      datos+=","+str(res[7]).replace(","," ")
-      datos+=","+str(res[8]).replace(","," ")
-      datos+=","+str(res[9]).replace(","," ")
-      datos+=","+str(res[10]).replace(","," ")
-      datos+=","+str(res[11]).replace(","," ")
-      datos+=","+str(res[12]).replace(","," ")
-      datos+=","+str(res[13]).replace(","," ")
-      datos+=","+str(res[14]).replace(","," ")
-      datos+=","+str(res[15]).replace(","," ")
-      datos+=","+str(res[16]).replace(","," ")
-      datos+=","+str(res[17]).replace(","," ")
-      datos+=","+str(res[18]).replace(","," ")
-      datos+=","+str(res[19]).replace(","," ")
       datos+="\n"
     response = make_response(datos.encode('latin-1'))
     response.headers["Content-Disposition"] = "attachment; encoding=latin-1; filename="+"Productos-"+str(datetime.today())+".csv"; 
