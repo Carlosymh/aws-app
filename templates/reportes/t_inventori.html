@@ -35,11 +35,11 @@
     <div class="filtros">
         <form action="/ReporteInventori/0" method="post" class="form_filtros">
             <select name="filtro">
-                <option value="RouteName">Ruta</option>
-                <option value="FuOrder">Fu Order</option>
-                <option value="CLid">CL id</option>
-                <option value="Ean">Ean</option>
-                <option value="Description">Descripción</option>
+                <option value="CB_Captura">CB_Captura</option>
+                <option value="EAN_MUNI">EAN MUNI</option>
+                <option value="Producto">Producto</option>
+                <option value="Status">Estatus</option>
+                <option value="inventoryUser">Ultimo Usuario</option>
                 <option value="Process">Proceso</option>
                 <option value="Responsible">Responsable</option>
             </select>
@@ -63,9 +63,8 @@
                         <th> Cantidad Actual </th>
                         <th> Unidad de Medida </th>
                         <th> Status </th>
-                        <th> inventoryUser </th>
+                        <th> Ultimo Usuario </th>
                         <th> Fecha de Actualizacion </th>
-                        <th> Site </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,7 +79,6 @@
                         <td>{{Info.7}}</td>
                         <td>{{Info.8}}</td>
                         <td>{{Info.9}}</td>
-                        <td>{{Info.10}}</td>
                     </tr>
                     {%endfor%}
                     <tr class="Pag">

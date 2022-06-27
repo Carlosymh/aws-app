@@ -428,11 +428,19 @@ def registro():
 def registrarReceiving():
   try:
       if request.method == 'POST':
+        OrderNumber =  request.form['OrderNumber']
+        ReceivingType="Recepción"
+        return render_template('actualizacion/receivingscan.html',Datos =session, ReceivingType=ReceivingType,OrderNumber=OrderNumber)
+  except Exception as error: 
+    flash(str(error))
+    return redirect('/Packing')
+
+    
+@application.route('/RegistrarReceivingP/<ReceivingType>',methods=['GET'])
+def registrarReceivingp(ReceivingType):
+  try:
         ReceivingType =  request.form['ReceivingType']
-        if request.form['OrderNumber']:
-          OrderNumber =  request.form['OrderNumber']
-        else:
-          OrderNumber =  "No aplica"
+        OrderNumber =  "No aplica"
         return render_template('actualizacion/receivingscan.html',Datos =session, ReceivingType=ReceivingType,OrderNumber=OrderNumber)
   except Exception as error: 
     flash(str(error))
