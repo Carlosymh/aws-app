@@ -568,7 +568,16 @@ def cerrarReceiving(receivingType,orderNumber):
     # your changes.
     db_connection.commit()
     cur.close()
-    
+    link = connectBD()
+    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+    cur= db_connection.cursor()
+    # Create a new record
+    sql = "UPDATE inventory SET 	Status=%s WHERE	Status=%s AND inventoryUser=%s AND Site=%s"
+    cur.execute(sql,('finalized','In Process',session['UserName'], session['SiteName'],))
+    # connection is not autocommit by default. So you must commit to save
+    # your changes.
+    db_connection.commit()
+    cur.close()
     link = connectBD()
     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")    
     cur= db_connection.cursor()
