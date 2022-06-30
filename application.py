@@ -739,13 +739,13 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
         timeZ = pytz.timezone('America/Mexico_City')
       elif session['SiteName']=='MEDELLIN01':
         timeZ = pytz.timezone('America/Bogota')
-      Factor_de_Conversión =  request.form['Factor_de_Conversión']
+      Factor_de_Conversion =  request.form['Factor_de_Conversion']
       link = connectBD()
       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
       # Create a new record
-      sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
-      cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversión,))
+      sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
+      cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversion,))
       # connection is not autocommit by default. So you must commit to save
       # your changes.
       db_connection.commit()
@@ -846,8 +846,8 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
     return redirect('/Inventory')
 
 # receiving mov register
-@application.route('/RegistrarProductoselect/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversión>/<cantidad>/<ReceivingType>/<OrderNumber>',methods=['POST','GET'])
-def registrarProductoSelect(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad,ReceivingType,OrderNumber):
+@application.route('/RegistrarProductoselect/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversion>/<cantidad>/<ReceivingType>/<OrderNumber>',methods=['POST','GET'])
+def registrarProductoSelect(ean,EAN_MUNI,Producto,Factor_de_Conversion,cantidad,ReceivingType,OrderNumber):
   try:
     if session['SiteName']=='CDMX01':
       timeZ = pytz.timezone('America/Mexico_City')
@@ -857,8 +857,8 @@ def registrarProductoSelect(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad
     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
     cur= db_connection.cursor()
     # Create a new record
-    sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
-    cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversión,))
+    sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
+    cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversion,))
     # connection is not autocommit by default. So you must commit to save
     # your changes.
     db_connection.commit()
@@ -971,13 +971,13 @@ def registrarProductoInv(ean,cantidad):
         timeZ = pytz.timezone('America/Mexico_City')
       elif session['SiteName']=='MEDELLIN01':
         timeZ = pytz.timezone('America/Bogota')
-      Factor_de_Conversión =  request.form['Factor_de_Conversión']
+      Factor_de_Conversion =  request.form['Factor_de_Conversion']
       link = connectBD()
       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
       # Create a new record
-      sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
-      cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversión,))
+      sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
+      cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversion,))
       # connection is not autocommit by default. So you must commit to save
       # your changes.
       db_connection.commit()
@@ -1082,8 +1082,8 @@ def registrarProductoInv(ean,cantidad):
     return redirect('/Inventory')
 
 # receiving mov register
-@application.route('/RegistrarProductoselectinv/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversión>/<cantidad>',methods=['POST','GET'])
-def registrarProductoSelectInv(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad):
+@application.route('/RegistrarProductoselectinv/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversion>/<cantidad>',methods=['POST','GET'])
+def registrarProductoSelectInv(ean,EAN_MUNI,Producto,Factor_de_Conversion,cantidad):
   try:
     receivingType="Inventory"
     orderNumber="No aplica"
@@ -1095,8 +1095,8 @@ def registrarProductoSelectInv(ean,EAN_MUNI,Producto,Factor_de_Conversión,canti
     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
     cur= db_connection.cursor()
     # Create a new record
-    sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
-    cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversión,))
+    sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
+    cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversion,))
     # connection is not autocommit by default. So you must commit to save
     # your changes.
     db_connection.commit()
@@ -1207,13 +1207,13 @@ def registrarProducto(ean):
     if request.method == 'POST':
       EAN_MUNI =  request.form['EAN_MUNI'].strip()
       Producto =  request.form['Producto']
-      Factor_de_Conversión =  request.form['Factor_de_Conversión']
+      Factor_de_Conversion =  request.form['Factor_de_Conversion']
       link = connectBD()
       db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
       cur= db_connection.cursor()
       # Create a new record
-      sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
-      cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversión,))
+      sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
+      cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversion,))
       # connection is not autocommit by default. So you must commit to save
       # your changes.
       db_connection.commit()
@@ -1232,15 +1232,15 @@ def registrarProducto(ean):
     return redirect('/Product')
 
 # receiving mov register
-@application.route('/RegistrarProductoselectproduct/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversión>',methods=['POST','GET'])
-def registrarProductoSelectProduct(ean,EAN_MUNI,Producto,Factor_de_Conversión):
+@application.route('/RegistrarProductoselectproduct/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversion>',methods=['POST','GET'])
+def registrarProductoSelectProduct(ean,EAN_MUNI,Producto,Factor_de_Conversion):
   try:
     link = connectBD()
     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
     cur= db_connection.cursor()
     # Create a new record
-    sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
-    cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversión,))
+    sql = "INSERT INTO product (CB_Captura,EAN_MUNI,Producto,Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
+    cur.execute(sql,(ean,EAN_MUNI,Producto,Factor_de_Conversion,))
     # connection is not autocommit by default. So you must commit to save
     # your changes.
     db_connection.commit()
@@ -2569,7 +2569,7 @@ def crear_csvproduct():
       cur.execute('SELECT * FROM product  ORDER BY ID_Product DESC  LIMIT {}, {}'.format(row1,row2))
       data = cur.fetchall()
       cur.close()
-    datos="ID Product"+","+"CB Captura"+","+"EAN MUNI"+","+"Producto"+","+"Factor de Conversión"+"\n"
+    datos="ID Product"+","+"CB Captura"+","+"EAN MUNI"+","+"Producto"+","+"Factor de Conversion"+"\n"
     for res in data:
       datos+=str(res[0]).replace(","," ")
       datos+=","+str(res[1]).replace(","," ")
@@ -2711,7 +2711,7 @@ def uploadFiles():
                 db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
                 cur= db_connection.cursor()
                 # Create a new record
-                sql = "INSERT INTO product (CB_Captura,  EAN_MUNI, Producto, Factor_de_Conversión) VALUES (%s,%s,%s,%s)"
+                sql = "INSERT INTO product (CB_Captura,  EAN_MUNI, Producto, Factor_de_Conversion) VALUES (%s,%s,%s,%s)"
                 cur.execute(sql,(row[0], row[1], row[2], row[3],))
                 # connection is not autocommit by default. So you must commit to save
                 # your changes.
@@ -2789,6 +2789,5 @@ def uploadFiles():
   #   return redirect('/files')
 
 
-# fuction main   
 # if __name__=='__main__':
-    # application.run(port=300, debug =True)
+#     application.run(port = 3000, debug =True)
