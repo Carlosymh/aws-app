@@ -847,7 +847,7 @@ def registrarProductorec(ean,cantidad,ReceivingType,OrderNumber):
 
 # receiving mov register
 @application.route('/RegistrarProductoselect/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversión>/<cantidad>/<ReceivingType>/<OrderNumber>',methods=['POST','GET'])
-def registrarProductoselect(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad,ReceivingType,OrderNumber):
+def registrarProductoSelect(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad,ReceivingType,OrderNumber):
   try:
     if session['SiteName']=='CDMX01':
       timeZ = pytz.timezone('America/Mexico_City')
@@ -960,7 +960,7 @@ def registrarProductoselect(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad
 
 # receiving mov register
 @application.route('/RegistrarProductoinv/<ean>/<cantidad>',methods=['POST','GET'])
-def registrarProductoinv(ean,cantidad):
+def registrarProductoInv(ean,cantidad):
   try:
     if request.method == 'POST':
       receivingType="Inventory"
@@ -1083,7 +1083,7 @@ def registrarProductoinv(ean,cantidad):
 
 # receiving mov register
 @application.route('/RegistrarProductoselectinv/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversión>/<cantidad>',methods=['POST','GET'])
-def registrarProductoselectinv(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad):
+def registrarProductoSelectInv(ean,EAN_MUNI,Producto,Factor_de_Conversión,cantidad):
   try:
     receivingType="Inventory"
     orderNumber="No aplica"
@@ -1233,7 +1233,7 @@ def registrarProducto(ean):
 
 # receiving mov register
 @application.route('/RegistrarProductoselectproduct/<ean>/<EAN_MUNI>/<Producto>/<Factor_de_Conversión>',methods=['POST','GET'])
-def registrarProductoselectproduct(ean,EAN_MUNI,Producto,Factor_de_Conversión):
+def registrarProductoSelectProduct(ean,EAN_MUNI,Producto,Factor_de_Conversión):
   try:
     link = connectBD()
     db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
