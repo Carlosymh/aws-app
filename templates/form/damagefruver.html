@@ -1,0 +1,120 @@
+{% extends 'nav.html'%}
+{% block cabezera%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image" href="/static/img/Muni.icon.png">  
+    <link rel="stylesheet" href="{{url_for('static', filename='css/nav.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/forminventory.css')}}">
+    <link href="//db.onlinewebfonts.com/c/69f1400361a215519d385199118a34aa?family=Harabara" rel="stylesheet" type="text/css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://kit.fontawesome.com/206b5ce088.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Khula:wght@800&display=swap" rel="stylesheet">
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('#munisten').click(function(){
+                if ($('#quantity').val() > 10)
+                    $('#quantity').val(parseInt($('#quantity').val()) - 1);
+            });
+            $('#munisfive').click(function(){
+                if ($('#quantity').val() > 5)
+                    $('#quantity').val(parseInt($('#quantity').val()) - 0.5);
+            });
+            $('#munisone').click(function(){
+                if ($('#quantity').val() > 1)
+                    $('#quantity').val(parseInt($('#quantity').val()) - 0.1);
+            });
+            
+            $('#moreone').click(function(){
+                $('#quantity').val(parseInt($('#quantity').val()) + 0.1);
+            });
+
+            $('#morefive').click(function(){
+                $('#quantity').val(parseInt($('#quantity').val()) + 0.5);
+            });
+            
+            $('#moreten').click(function(){
+                $('#quantity').val(parseInt($('#quantity').val()) + 1);
+            });});
+
+           
+                
+        </script>
+    <title>Merma F&V</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages%}
+    {%for message in messages%}
+    <script>
+        alert('{{message}}')
+    </script>
+    {%endfor%}
+    {%endif%}
+    {%endwith%}
+    {% endblock %}
+    {% block body%}
+    <div class="container-formscan">
+        <section class="form-register">
+            <form id="contact-form" name="contact-form" class="contact-form" method="post" action="/RegistrarDamage/{{type}}/KG">
+                <h2 class="titulo2"> Escanea un ean</h2>
+                    <label for="cantidad"> Cantidad:
+                        <input name="cantidad" id="quantity" type="number"  value="1"  required>
+                    </label>
+                    <div class="butons">
+                        <a id="munisten" class="abutons" >- 1 KG</a>
+                        <a id="munisfive" class="abutons" >- 0.5 KG</a>
+                        <a id="munisone" class="abutons" >- 0.1 KG</a>
+                        <a id="moreone" class="abutons" >+ 0.1 KG</a>
+                        <a id="morefive" class="abutons" >+ 0.5 KG</a>
+                        <a id="moreten" class="abutons" >+ 1 KG</a>
+                    </div>
+                    <label for="Motivo">Motivo:</label>
+                    <select name="Motivo" >
+                        <option value="Cadena Frío/Perdida de Vacío">Cadena Frío/Perdida de Vacío</option>
+                        <option value="Extraccion">Extraccion</option>
+                        <option value="Calidad">Calidad</option>
+                        <option value="Daño Mecánico">Daño Mecánico</option>
+                        <option value="Devolucion">Devolucion</option>
+                        <option value="Maduración">Maduración</option>
+                    </select>
+                <label for="ean"> EAN:
+                    <input name="ean" type="text"  autofocus >
+                </label>
+                    <input class="BTN" type="submit" value="ENVIAR">
+                
+            </form>
+
+            <a href="/CerrarDamage" class="cerrar_btn">Cerrar</a>
+
+        </section>
+        <section class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Ean Muni</td>
+                        <td>Descripción</td>
+                        <td>Cantidad</td>
+                        <td>Motivo</td>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for row in data %}
+                  <tr>
+                      <td>{{row[0]}}</td>
+                      <td>{{row[1]}}</td>
+                      <td>{{row[2]}}</td>
+                      <td>{{row[3]}}</td>
+                  </tr>
+                  {%endfor%}
+                </tbody>
+            </table>
+        </section>
+    </div>
+{% endblock %}

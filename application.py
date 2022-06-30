@@ -58,7 +58,7 @@ def validarusuaro():
   else:
     return redirect('/')
  
-# form to change site
+# form to change site 
 @application.route('/cambiar', methods=['POST'])
 def cambiarfacility():
   try:
@@ -68,7 +68,20 @@ def cambiarfacility():
       return redirect('/home')
   except:
     return redirect('/home')
-    
+ 
+ # home page 
+@application.route('/mermas',methods=['POST','GET'])
+def mermas():
+  try:
+    if 'FullName' in session:
+      return render_template('mermas.html',Datos = session)
+    else:
+      flash("Inicia Sesion")
+      return redirect('/')
+  except Exception as error:
+    flash(str(error))
+    return redirect('/') 
+   
 # user validation
 @application.route('/validar/<usuario>', methods=['POST'])
 def validarcontrasena(usuario):
@@ -156,11 +169,18 @@ def inventory():
     return redirect('/') 
 
 # inventori form
-@application.route('/Damage',methods=['POST','GET'])
-def damage():
+@application.route('/Damage/<type>',methods=['POST','GET'])
+def damage(type):
   try:
     if 'FullName' in session:
-      return render_template('form/damage.html',Datos = session)
+      if type == 'cpg':
+        return render_template('form/damagerefrigecpg.html',Datos = session,type=type)
+      elif type == 'fruver':
+        return render_template('form/damagefruver.html',Datos = session,type=type)
+      elif type == 'Refrigerados':
+        return render_template('form/damagerefrigecpg.html',Datos = session,type=type)
+      elif type == 'eggs':
+        return render_template('form/damageeggs.html',Datos = session,type=type)
     else:
       flash("Inicia Sesion")
       return redirect('/')
@@ -1316,9 +1336,9 @@ def searchProduct(ean):
     return redirect('/Inventory')
 
 # receiving register 
-@application.route('/RegistrarDamage',methods=['POST','GET'])
-def registrarDamage():
-  # try:
+@application.route('/RegistrarDamage/<type>/<um>',methods=['POST','GET'])
+def registrarDamage(type,um):
+  try:
       if request.method == 'POST':
         cantidad =  request.form['cantidad']
         Motivo =  request.form['Motivo']
@@ -1339,8 +1359,8 @@ def registrarDamage():
           catidad2= int(cantidad)*int(data[4])
           cur= db_connection.cursor()
           # Create a new record
-          sql = "INSERT INTO mermas (Ean,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-          cur.execute(sql,(ean,data[2],data[3],catidad2,Motivo,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
+          sql = "INSERT INTO mermas (type,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime,unitOfMeasurement) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+          cur.execute(sql,(type,data[2],data[3],catidad2,Motivo,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),um))
           # connection is not autocommit by default. So you must commit to save
           # your changes.
           db_connection.commit()
@@ -1393,8 +1413,8 @@ def registrarDamage():
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
-            sql = "INSERT INTO mermas (Ean,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-            cur.execute(sql,(ean,Inv[1],Inv[2],cantidad,Motivo,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
+            sql = "INSERT INTO mermas (type,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime,unitOfMeasurement) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            cur.execute(sql,(type,Inv[1],Inv[2],cantidad,Motivo,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),um))
             # connection is not autocommit by default. So you must commit to save
             # your changes.
             db_connection.commit()
@@ -1404,8 +1424,8 @@ def registrarDamage():
             db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
             cur= db_connection.cursor()
             # Create a new record
-            sql = "INSERT INTO mermas (Ean,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-            cur.execute(sql,(ean,ean,'No Registrado',cantidad,Motivo,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),))
+            sql = "INSERT INTO mermas (type,	EAN_MUNI,Description,Quantity,Reason,Responsible,Status,Site,DateTime,unitOfMeasurement) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            cur.execute(sql,(type,ean,'No Registrado',cantidad,Motivo,session['UserName'],'In Process',session['SiteName'],datetime.now(timeZ),um))
             # connection is not autocommit by default. So you must commit to save
             # your changes.
             db_connection.commit()
@@ -1417,9 +1437,9 @@ def registrarDamage():
           data2 = cur.fetchall()
           cur.close()
           return render_template('form/damage.html',Datos =session, data=data2)
-  # except Exception as error: 
-  #   flash(str(error))
-  #   return redirect('/Damage')
+  except Exception as error: 
+    flash(str(error))
+    return redirect('/Damage')
 
 # close receipt
 @application.route('/CerrarDamage',methods=['POST','GET'])
