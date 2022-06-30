@@ -3139,19 +3139,19 @@ def crear_csviMerma():
         cur.execute('SELECT * FROM mermas WHERE Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
         data = cur.fetchall()
         cur.close()
-    datos="ID Merma"+","+"Tipo"+","+"EAN MUNI"+","+"Descripción"+","+"Cantidad"+","+"Razón"+","+"Responsabilidad"+","+"Estatus"+","+"Site"+","+"Fecha y Hora"+","+"Unidad de Medidia"+","+"\n"
+    datos="ID Merma"+","+"Tipo"+","+"EAN MUNI"+","+"Descripción"+","+"Cantidad"+","+"Unidad de Medidia"+","+"Razón"+","+"Responsabilidad"+","+"Estatus"+","+"Site"+","+"Fecha y Hora"+","+"\n"
     for res in data:
       datos+=str(res[0]).replace(","," ")
       datos+=","+str(res[1]).replace(","," ")
       datos+=","+str(res[2]).replace(","," ")
       datos+=","+str(res[3]).replace(","," ")
       datos+=","+str(res[4]).replace(","," ")
+      datos+=","+str(res[10]).replace(","," ")
       datos+=","+str(res[5]).replace(","," ")
       datos+=","+str(res[6]).replace(","," ")
       datos+=","+str(res[7]).replace(","," ")
       datos+=","+str(res[8]).replace(","," ")
       datos+=","+str(res[9]).replace(","," ")
-      datos+=","+str(res[10]).replace(","," ")
       datos+="\n"
     response = make_response(datos.encode('latin-1'))
     response.headers["Content-Disposition"] = "attachment; encoding=latin-1; filename="+"Mermas-"+str(datetime.today())+".csv"; 

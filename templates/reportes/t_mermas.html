@@ -35,13 +35,13 @@
     <div class="filtros">
         <form action="/ReporteInventori/0" method="post" class="form_filtros">
             <select name="filtro">
-                <option value="CB_Captura">CB_Captura</option>
+                <option value="type">Tipo</option>
                 <option value="EAN_MUNI">EAN MUNI</option>
-                <option value="Producto">Producto</option>
-                <option value="Status">Estatus</option>
-                <option value="inventoryUser">Ultimo Usuario</option>
-                <option value="Process">Proceso</option>
+                <option value="Description">Descripción</option>
+                <option value="unitOfMeasurement">Unidad de Medida</option>
+                <option value="Reason">Razón</option>
                 <option value="Responsible">Responsable</option>
+                <option value="Status">Estatus</option>
             </select>
             <input autocomplete="off" type="text" name="valor">
             <label for="datefilter">Fecha: </label>
@@ -56,15 +56,15 @@
             <table>
                 <thead >
                     <tr class="head">
-                        <th> type </th>
-                        <th> EAN_MUNI </th>
-                        <th> Description </th>
-                        <th> Quantity </th>
-                        <th> unitOfMeasurement </th>
-                        <th> Reason </th>
-                        <th> Responsible </th>
-                        <th> Status </th>
-                        <th> DateTime </th>
+                        <th> Tipo </th>
+                        <th> EAN MUNI </th>
+                        <th> Descripción </th>
+                        <th> Cantidad </th>
+                        <th> Unidad de Medida </th>
+                        <th> Razón </th>
+                        <th> Responsable </th>
+                        <th> Estatus </th>
+                        <th> Fecha y Hora </th>
                     </tr>
                 </thead>
                 <tbody>
