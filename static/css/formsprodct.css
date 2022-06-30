@@ -52,10 +52,10 @@ table{
     border-radius:5px;
     border-collapse: collapse;
 }
-table tr{
-
+tbody tr td {
     padding: 10px 0;
-    border-bottom:1px solid#ddd;
+    margin-bottom: 5px;
+    border-bottom:1px solid #ddd;
 }
 
 .titulo{
@@ -126,6 +126,6 @@ thead,
     background: #04f892;
     color: #fff;
     border-radius: 5px;
-    font-size: 10px;
+    font-size: 8px;
     border: 1px solid #555;
 }
