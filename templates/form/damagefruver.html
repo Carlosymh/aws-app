@@ -16,36 +16,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Khula:wght@800&display=swap" rel="stylesheet">
     <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            $('#munisten').click(function(){
-                if ($('#quantity').val() > 10)
-                    $('#quantity').val(parseInt($('#quantity').val()) - 1);
-            });
-            $('#munisfive').click(function(){
-                if ($('#quantity').val() > 5)
-                    $('#quantity').val(parseInt($('#quantity').val()) - 0.5);
-            });
-            $('#munisone').click(function(){
-                if ($('#quantity').val() > 1)
-                    $('#quantity').val(parseInt($('#quantity').val()) - 0.1);
-            });
-            
-            $('#moreone').click(function(){
-                $('#quantity').val(parseInt($('#quantity').val()) + 0.1);
-            });
-
-            $('#morefive').click(function(){
-                $('#quantity').val(parseInt($('#quantity').val()) + 0.5);
-            });
-            
-            $('#moreten').click(function(){
-                $('#quantity').val(parseInt($('#quantity').val()) + 1);
-            });});
-
-           
-                
-        </script>
     <title>Merma F&V</title>
 </head>
 <body>
@@ -67,14 +37,6 @@
                     <label for="cantidad"> Cantidad:
                         <input name="cantidad" id="quantity" type="number"  value="1"  required>
                     </label>
-                    <div class="butons">
-                        <a id="munisten" class="abutons" >- 1 KG</a>
-                        <a id="munisfive" class="abutons" >- 0.5 KG</a>
-                        <a id="munisone" class="abutons" >- 0.1 KG</a>
-                        <a id="moreone" class="abutons" >+ 0.1 KG</a>
-                        <a id="morefive" class="abutons" >+ 0.5 KG</a>
-                        <a id="moreten" class="abutons" >+ 1 KG</a>
-                    </div>
                     <label for="Motivo">Motivo:</label>
                     <select name="Motivo" >
                         <option value="Cadena Frío/Perdida de Vacío">Cadena Frío/Perdida de Vacío</option>
