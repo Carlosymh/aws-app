@@ -119,3 +119,11 @@ thead,
     border: 2px solid #01d4c7;
 
 }
+
+.butonselect{
+    margin: auto;
+    padding: 3px;
+    background: #04f892;
+    color: #fff;
+    border-radius: 5px;
+}
