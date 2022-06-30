@@ -2465,6 +2465,368 @@ def reporte_inventori(rowi):
     flash(str(error))
     return render_template('index.html')
 
+# movements report 
+@application.route('/ReporteMermas/<rowi>',methods=['POST','GET'])
+def reporte_mermas(rowi):
+  try:
+      if request.method == 'POST':
+        if request.method == 'GET':
+          session['rowi_mermas']=rowi
+          row1 = int(session['rowi_mermas'])
+          row2 = 50
+        else:
+            row1 = int(session['rowi_mermas'])
+            row2 =50
+        if 'valor' in request.form:
+          if len(request.form['valor'])>0:
+            session['filtro_mermas']=request.form['filtro']
+            session['valor_mermas']=request.form['valor']
+            if 'datefilter' in request.form:
+              if len(request.form['datefilter'])>0:
+                daterangef=request.form['datefilter']
+                daterange=daterangef.replace("-", "' AND '")
+                session['datefilter_mermas']=daterange
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['datefilter_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+            else:
+              session.pop('datefilter')
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+              cur= db_connection.cursor()
+              # Read a single record
+              sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2)
+              cur.execute(sql)
+              data = cur.fetchall()
+              cur.close()
+              return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+          else:
+            if 'datefilter' in request.form:
+              if len(request.form['datefilter'])>0:
+                if 'valor_mermas' in session:
+                  if len(session['valor_mermas'])>0:
+                    daterangef=request.form['datefilter']
+                    daterange=daterangef.replace("-", "' AND '")
+                    session['datefilter_mermas']=daterange
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                    cur= db_connection.cursor()
+                    # Read a single record
+                    sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['datefilter_mermas'],session['SiteName'],row1,row2)
+                    cur.execute(sql)
+                    data = cur.fetchall()
+                    cur.close()
+                    return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+                  else:
+                    session.pop('filtro_mermas')
+                    session.pop('valor_mermas')
+                    link = connectBD()
+                    db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                    cur= db_connection.cursor()
+                    # Read a single record
+                    sql = "SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+                    cur.execute(sql)
+                    data = cur.fetchall()
+                    cur.close()
+                    return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+                else:
+                  daterangef=request.form['datefilter']
+                  daterange=daterangef.replace("-", "' AND '")
+                  session['datefilter_mermas']=daterange
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                if 'valor_mermas' in session:
+                  session.pop('filtro_mermas')
+                  session.pop('valor_mermas')
+                if 'datefilter_mermas' in session:
+                  session.pop('datefilter_mermas')
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+            else:
+              if 'valor_mermas' in session:
+                session.pop('filtro_mermas')
+                session.pop('valor_mermas')
+              if 'datefilter_mermas' in session:
+                  session.pop('datefilter_mermas')
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+              cur= db_connection.cursor()
+              # Read a single record
+              sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+              cur.execute(sql)
+              data = cur.fetchall()
+              cur.close()
+              return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+
+        else:
+          if 'valor_mermas' in session:
+            if len(session['valor_mermas'])>0:
+              if 'datefilter_mermas' in session:
+                if len(session['datefilter_mermas'])>0:
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['datefilter_mermas'],session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+                else:
+                  session.pop('datefilter_mermas')
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data) 
+            else:
+              session.pop('filtro_mermas')
+              session.pop('valor_mermas')
+              if 'datefilter_mermas' in session:
+                if len(session['datefilter_mermas'])>0:
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+                else:
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+          else:
+            if 'datefilter_mermas' in session:
+              if len(session['datefilter_mermas'])>0:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                session.pop('datefilter_mermas')
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                cur.execute('SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+            else:
+              if 'datefilter' in request.form:
+                if len(request.form['datefilter'])>0:
+                  daterangef=request.form['datefilter']
+                  daterange=daterangef.replace("-", "' AND '")
+                  session['datefilter_mermas']=daterange
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE   DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+                else:
+                  link = connectBD()
+                  db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                  cur= db_connection.cursor()
+                  # Read a single record
+                  sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+                  cur.execute(sql)
+                  data = cur.fetchall()
+                  cur.close()
+                  return render_template('reportes/t_mermas.html',Datos = session,Infos =data) 
+              else:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data) 
+      else: 
+        if request.method == 'GET':
+          session['rowi_mermas']=rowi
+          row1 = int(session['rowi_mermas'])
+          row2 = 50
+        else:
+          row1 = int(session['rowi_mermas'])
+          row2 =50
+        if 'valor_mermas' in session:
+          if len(session['valor_mermas'])>0:
+            if 'datefilter_mermas' in session:
+              if len(session['datefilter_mermas'])>0:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['datefilter_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                session.pop('datefilter_mermas')
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+            else:
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+              cur= db_connection.cursor()
+              # Read a single record
+              sql = "SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2)
+              cur.execute(sql)
+              data = cur.fetchall()
+              cur.close()
+              return render_template('reportes/t_mermas.html',Datos = session,Infos =data) 
+          else:
+            session.pop('filtro_mermas')
+            session.pop('valor_mermas')
+            if 'datefilter_mermas' in session:
+              if len(session['datefilter_mermas'])>0:
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+              else:
+                session.pop('datefilter_mermas')
+                link = connectBD()
+                db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+                cur= db_connection.cursor()
+                # Read a single record
+                sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+                cur.execute(sql)
+                data = cur.fetchall()
+                cur.close()
+                return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+            else:
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+              cur= db_connection.cursor()
+              # Read a single record
+              sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+              cur.execute(sql)
+              data = cur.fetchall()
+              cur.close()
+              return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+        else:
+          if 'datefilter_mermas' in session:
+            if len(session['datefilter_mermas'])>0:
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+              cur= db_connection.cursor()
+              # Read a single record
+              sql = "SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['datefilter_mermas'],session['SiteName'],row1,row2)
+              cur.execute(sql)
+              data = cur.fetchall()
+              cur.close()
+              return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+            else:
+              session.pop('datefilter_mermas')
+              link = connectBD()
+              db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+              cur= db_connection.cursor()
+              # Read a single record
+              sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+              cur.execute(sql)
+              data = cur.fetchall()
+              cur.close()
+              return render_template('reportes/t_mermas.html',Datos = session,Infos =data)
+          else:
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+            cur= db_connection.cursor()
+            # Read a single record
+            sql = "SELECT * FROM mermas WHERE Site =\'{}\' ORDER BY ID_Merma DESC  LIMIT {}, {}".format(session['SiteName'],row1,row2)
+            cur.execute(sql)
+            data = cur.fetchall()
+            cur.close()
+            return render_template('reportes/t_mermas.html',Datos = session,Infos =data)         
+  except Exception as error: 
+    flash(str(error))
+    return render_template('index.html')
+
 # receiving  dowload report
 @application.route('/csvreceiving',methods=['POST','GET'])
 def crear_csvreceiving():
@@ -2696,6 +3058,103 @@ def crear_csvinventory():
       datos+="\n"
     response = make_response(datos.encode('latin-1'))
     response.headers["Content-Disposition"] = "attachment; encoding=latin-1; filename="+"Inventario-"+str(datetime.today())+".csv"; 
+    return response
+  except Exception as error: 
+    flash(str(error))
+
+# movements  dowload report
+@application.route('/csvmerma',methods=['POST','GET'])
+def crear_csviMerma():
+  try:
+    site=session['SiteName']
+    row1 = 0
+    row2 =5000
+    if 'valor_mermas' in session:
+      if len(session['valor_mermas'])>0:
+        if 'datefilter_mermas' in session:
+          if len(session['datefilter'])>0:
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+            cur= db_connection.cursor()
+            cur.execute('SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['filtro_mermas'],session['valor_mermas'],session['datefilter_mermas'],session['SiteName'],row1,row2))
+            data = cur.fetchall()
+            cur.close()
+          else:
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+            cur= db_connection.cursor()
+            cur.execute('SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2))
+            data = cur.fetchall()
+            cur.close()
+        else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          cur.execute('SELECT * FROM mermas WHERE {} LIKE \'%{}%\' AND Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['filtro_mermas'],session['valor_mermas'],session['SiteName'],row1,row2))
+          data = cur.fetchall()
+          cur.close()
+      else:
+        if 'datefilter_mermas' in session:
+          if len(session['datefilter_mermas'])>0:
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+            cur= db_connection.cursor()
+            cur.execute('SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['datefilter_mermas'],session['SiteName'],row1,row2))
+            data = cur.fetchall()
+            cur.close()
+          else:
+            link = connectBD()
+            db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+            cur= db_connection.cursor()
+            cur.execute('SELECT * FROM mermas WHERE Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+            data = cur.fetchall()
+            cur.close()
+        else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          cur.execute('SELECT * FROM mermas WHERE Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+          data = cur.fetchall()
+          cur.close()
+    else:
+      if 'datefilter_mermas' in session:
+        if len(session['datefilter_mermas'])>0:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          cur.execute('SELECT * FROM mermas WHERE  DATE(DateTime) BETWEEN \'{}\' AND Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['datefilter_mermas'],session['SiteName'],row1,row2))
+          data = cur.fetchall()
+          cur.close()
+        else:
+          link = connectBD()
+          db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+          cur= db_connection.cursor()
+          cur.execute('SELECT * FROM mermas WHERE Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+          data = cur.fetchall()
+          cur.close()
+      else:
+        link = connectBD()
+        db_connection = pymysql.connect(host=link[0], user=link[1], passwd=link[2], db=link[3], charset="utf8", init_command="set names utf8")
+        cur= db_connection.cursor()
+        cur.execute('SELECT * FROM mermas WHERE Site =\'{}\'  ORDER BY ID_Merma DESC  LIMIT {}, {}'.format(session['SiteName'],row1,row2))
+        data = cur.fetchall()
+        cur.close()
+    datos="ID Merma"+","+"Tipo"+","+"EAN MUNI"+","+"Descripción"+","+"Cantidad"+","+"Razón"+","+"Responsabilidad"+","+"Estatus"+","+"Site"+","+"Fecha y Hora"+","+"Unidad de Medidia"+","+"\n"
+    for res in data:
+      datos+=str(res[0]).replace(","," ")
+      datos+=","+str(res[1]).replace(","," ")
+      datos+=","+str(res[2]).replace(","," ")
+      datos+=","+str(res[3]).replace(","," ")
+      datos+=","+str(res[4]).replace(","," ")
+      datos+=","+str(res[5]).replace(","," ")
+      datos+=","+str(res[6]).replace(","," ")
+      datos+=","+str(res[7]).replace(","," ")
+      datos+=","+str(res[8]).replace(","," ")
+      datos+=","+str(res[9]).replace(","," ")
+      datos+=","+str(res[10]).replace(","," ")
+      datos+="\n"
+    response = make_response(datos.encode('latin-1'))
+    response.headers["Content-Disposition"] = "attachment; encoding=latin-1; filename="+"Mermas-"+str(datetime.today())+".csv"; 
     return response
   except Exception as error: 
     flash(str(error))
